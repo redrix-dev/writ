@@ -1,0 +1,26 @@
+{
+  "name": "nexus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redrix-dev/nexus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/redrix-dev/nexus/issues"
+  },
+  "homepage": "https://github.com/redrix-dev/nexus#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
