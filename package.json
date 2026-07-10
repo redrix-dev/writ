@@ -1,26 +1,30 @@
 {
-  "name": "nexus",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "nexus-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for @redrixx/nexus — an authority-oriented entity-lifecycle state runtime.",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/redrix-dev/nexus.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
+  "author": "Cody Magnuson (redrixx)",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/redrix-dev/nexus#readme",
   "bugs": {
     "url": "https://github.com/redrix-dev/nexus/issues"
   },
-  "homepage": "https://github.com/redrix-dev/nexus#readme",
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
   }
 }

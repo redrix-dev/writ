@@ -35,9 +35,19 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
 3. **Reactive substrate:** SHIP OUR OWN ~40-line vanilla store; React adapter = `useSyncExternalStore`.
 4. **License:** APACHE-2.0 (LICENSE + NOTICE, per-file headers optional). NOT BUSL.
 
-## Open decisions (BLOCKING — need Cody's call)
-5. **Package name:** npm `nexus` is TAKEN (deprecated GraphQL lib). Use a scope you own —
-   `@redrixx/nexus` or `@redrix-dev/nexus` (bare local name stays "nexus"). → need your npm scope/handle.
+5. **Package name:** `@redrixx/nexus` (scope confirmed free — 0 packages under it). Cody
+   to claim the `redrixx` npm account before first publish (free, no domain needed; step 8).
+
+## Build progress
+- **Steps 1–2 DONE** (2026-07-10): monorepo scaffold + `packages/core` with the
+  persistence port (`Persistence` + `createMemoryPersistence`) and the vanilla store
+  + capability split (`createCell` → `Writer` w/ private `set`, `Reader` = get/subscribe).
+  One-writer proven structurally in tests (reader has no write method). 16 tests green,
+  typecheck clean, build emits `.d.ts`/`.d.ts.map`/`.js`/`.js.map`.
+- **TS 7 (`tsgo`) verdict: KEEP.** `typescript@7.0.2` builds + emits declarations cleanly;
+  the SCOPE risk is cleared. No need to pin 5.x.
+- **NEXT → step 3: entity store** (`createEntityStore`: spawn/update/destroy/clear). This
+  is the API surface flagged for Cody's review before it's locked.
 
 ## Extraction order (each step independently shippable)
 1. Persistence port + memory adapter

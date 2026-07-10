@@ -1,0 +1,11 @@
+{
+  // Editor + typecheck config: sees everything, including tests. Emit is done
+  // by tsconfig.build.json (which excludes tests).
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "noEmit": true
+  },
+  "include": ["src/**/*"]
+}
