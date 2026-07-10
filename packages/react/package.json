@@ -1,6 +1,6 @@
 {
   "name": "@redrixx/nexus-react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React bindings for @redrixx/nexus — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
   "type": "module",
   "exports": {
@@ -10,14 +10,16 @@
     }
   },
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "NOTICE"],
   "sideEffects": false,
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "check:exports": "publint && attw --pack . --profile esm-only",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
@@ -38,7 +40,7 @@
     "url": "https://github.com/redrix-dev/nexus/issues"
   },
   "peerDependencies": {
-    "@redrixx/nexus": "*",
+    "@redrixx/nexus": "^0.1.0",
     "react": ">=18"
   },
   "devDependencies": {

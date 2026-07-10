@@ -83,11 +83,22 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
   headless Chromium: both modes render, presence seeds/churns, local send appears, toggle
   works; only console noise was a favicon 404 (fixed). Prod build: 202 KB / 64 KB gzip.
 - **DELIVERABLE 3 COMPLETE.** Deliverables 1–3 done (core, React adapter, demo).
-- **NEXT → step 7: standalone README** (full pitch + "Not yet supported"). Then step 8:
-  CI (typecheck/test/build/publint/attw, topological order) + Vercel deploy of the demo +
-  npm publish once Cody claims the `redrixx` scope.
-- Build-order note for CI: `@redrixx/nexus` must build before `@redrixx/nexus-react`
-  (react resolves core types from `dist`). Wire topological build / project refs in CI.
+- **Step 7 DONE** (2026-07-10): standalone README (full 30-second pitch, storage-vs-
+  authority framing, 60-second tour, React section, "how is this different", **"Not yet
+  supported" non-goals**, stability note). Root + per-package READMEs (npm renders the
+  package ones). DELIVERABLE 4 COMPLETE.
+- **Publish-prep DONE** (2026-07-10): versions → 0.1.0; react peer → `^0.1.0`; LICENSE +
+  NOTICE copied into each package; `files: ["dist","NOTICE"]`; `prepublishOnly` build;
+  `check:exports` (publint + attw `--profile esm-only`) per package + root aggregate;
+  root `ci` script (typecheck+test+check:exports). **Validated:** publint "All good!"
+  both packages; attw green for ESM/bundler (CJS-require intentionally ESM-only, ignored).
+  `.github/workflows/ci.yml` runs `npm ci && npm run ci`. Full gate passes (exit 0).
+- Cody claimed the `redrixx` npm account (2026-07-10).
+- **REMAINING (needs Cody, local):** run the publish walkthrough (`npm login` → publish
+  core → publish react). Then step 8 tail: Vercel deploy of the demo. Provenance is a
+  later CI nicety (needs OIDC trusted-publisher; local publish is plain `npm publish`).
+- ESM-only is deliberate for v0.1 (documented). CJS consumers use dynamic import. Revisit
+  dual-CJS only if a real consumer needs `require()`.
 
 ## Deferred (perf/ergonomics, not v0.1 blockers)
 - Copy-on-write is O(n)/write. Fine for lifecycle-owner entity counts; add batched/

@@ -13,6 +13,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check:exports": "npm run build && npm run check:exports --workspace @redrixx/nexus --workspace @redrixx/nexus-react",
+    "ci": "npm run typecheck && npm run test && npm run check:exports",
     "demo": "npm run dev --workspace @redrixx/nexus-demo",
     "demo:build": "npm run build --workspace @redrixx/nexus-demo"
   },
@@ -27,8 +29,10 @@
     "url": "https://github.com/redrix-dev/nexus/issues"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@types/node": "^22.20.1",
     "jsdom": "^25.0.1",
+    "publint": "^0.3.21",
     "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }
