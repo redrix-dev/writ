@@ -19,8 +19,8 @@ const modes: readonly { id: Mode; label: string; note: string }[] = [
     note: "A fair alternative with private mutation and named actions.",
   },
   {
-    id: "nexus",
-    label: "Nexus-shaped",
+    id: "projectname",
+    label: "projectname-shaped",
     note: "Most consumers receive observation plus narrow commands, not raw writers.",
   },
 ];
@@ -89,8 +89,10 @@ function Topology({ mode }: { mode: Mode }) {
 export function App() {
   const mode =
     (new URLSearchParams(location.search).get("mode") as Mode | null) ??
-    "nexus";
-  const selectedMode = modes.some((item) => item.id === mode) ? mode : "nexus";
+    "projectname";
+  const selectedMode = modes.some((item) => item.id === mode)
+    ? mode
+    : "projectname";
   const runtime = useMemo(
     () => new EvidenceRuntime(selectedMode),
     [selectedMode],
@@ -109,7 +111,7 @@ export function App() {
     <div className="app-shell">
       <header className="hero">
         <div>
-          <span className="kicker">Nexus evidence lab</span>
+          <span className="kicker">projectname evidence lab</span>
           <h1>Make ownership and invalid transitions visible.</h1>
           <p>
             One domain scenario, one scripted event stream, and one rendered
@@ -154,7 +156,7 @@ export function App() {
             </small>
           </article>
           <article>
-            <span>Nexus-shaped</span>
+            <span>projectname-shaped</span>
             <strong>Writer retained; readers and commands published</strong>
             <small>
               Strict existence transitions and scoped disposal are explicit.
@@ -374,7 +376,7 @@ export function App() {
 
         <section className="panel limits-panel">
           <div>
-            <span className="eyebrow">What Nexus did not solve</span>
+            <span className="eyebrow">What projectname did not solve</span>
             <h2>The boundary is evidence, not magic.</h2>
           </div>
           <ul>
@@ -386,7 +388,7 @@ export function App() {
           </ul>
           <p className="decisive">
             In a disciplined native implementation, correctness depends on
-            contributors preserving the convention. In the Nexus-shaped
+            contributors preserving the convention. In the projectname-shaped
             implementation, most contributors never receive the mutation
             capability.
           </p>

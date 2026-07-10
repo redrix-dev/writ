@@ -1,7 +1,7 @@
 /**
  * Persistence port — the one seam for optional durability.
  *
- * Nexus core never imports a platform storage module. A host that wants an
+ * projectname core never imports a platform storage module. A host that wants an
  * owner's state to survive a reload injects an implementation of this port;
  * a host that doesn't, injects nothing. The port is a plain synchronous
  * string key/value store — the smallest thing every backing store (memory,

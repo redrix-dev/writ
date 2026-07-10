@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import type { EntityReader, Reader } from "@redrixx/nexus";
+import type { EntityReader, Reader } from "@redrixx/projectname";
 
 /**
  * Subscribe a component to a {@link Reader} and return its current value.
@@ -7,7 +7,7 @@ import type { EntityReader, Reader } from "@redrixx/nexus";
  * This is the whole React binding: a reader is exactly the
  * `subscribe` + `getSnapshot` pair `useSyncExternalStore` wants, so the adapter
  * is a one-liner. The component re-renders when — and only when — the reader's
- * value reference changes (Nexus stores publish a new reference on every commit
+ * value reference changes (projectname stores publish a new reference on every commit
  * and the same reference otherwise, so this is stable).
  *
  * @typeParam S - Snapshot type exposed by the reader.

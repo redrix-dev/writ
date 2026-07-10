@@ -1,20 +1,21 @@
-# SCOPE.md — Nexus v0.1
+# SCOPE.md — projectname v0.1
 
 Running log of decisions made and things deferred, so sessions stay resumable.
 Full analysis: [`docs/extraction-analysis.md`](./docs/extraction-analysis.md).
 
 ## The thesis (do not drift from this)
 
-Nexus is a small authority and lifecycle layer for hot shared application state.
-State libraries provide storage, reactivity, selectors, update propagation, and
-mature tooling; Nexus complements them by organizing store ownership, write
-authority, scoped lifetime, and asserted entity existence. Primary tagline:
-"Make authority a capability, not a convention." "State libraries manage
-storage; Nexus manages authority" is shorthand, not an adversarial comparison.
-The precise guarantee is one created writer capability plus a separate reader
-with no Nexus mutation method. Writers can be shared or leaked, reader values
-are not deeply frozen, registries do not prove a single application root, and
-the boundary is architectural rather than hostile-code isolation.
+projectname is a small authority and lifecycle layer for hot shared application
+state. State libraries provide storage, reactivity, selectors, update
+propagation, and mature tooling; projectname complements them by organizing
+store ownership, write authority, scoped lifetime, and asserted entity
+existence. Primary tagline: "Make authority a capability, not a convention."
+"State libraries manage storage; projectname manages authority" is shorthand,
+not an adversarial comparison. The precise guarantee is one created writer
+capability plus a separate reader with no projectname mutation method. Writers
+can be shared or leaked, reader values are not deeply frozen, registries do not
+prove a single application root, and the boundary is architectural rather than
+hostile-code isolation.
 
 ## Key finding (2026-07-10)
 
@@ -30,12 +31,13 @@ Authority in code, not lint.
   don't drag `HavenSolidCore`/`RealtimeMutationTarget`/backends across.
 - **Core ships its own tiny vanilla store** (zero deps); React adapter uses
   `useSyncExternalStore`. _(recommendation — confirm via Fork A)_
-- **Drop from the Haven model:** `revision` (vestigial), `NexusEntry.partial` +
-  `cachedAt` (Haven fetch concern), Zustand/Solid substrate, storage-key
-  namespacing, all realtime/backend/policy code.
-- **Keep from Haven:** `NexusPersistence` port + memory/localStorage adapters;
-  the registry singleton (`register`/`require`/`reset`/`get`); the one-nexus
-  file shape (owns store → projections → named writes → calls pure fns).
+- **Drop from the Haven model:** `revision` (vestigial),
+  `projectnameEntry.partial` + `cachedAt` (Haven fetch concern), Zustand/Solid
+  substrate, storage-key namespacing, all realtime/backend/policy code.
+- **Keep from Haven:** `projectnamePersistence` port + memory/localStorage
+  adapters; the registry singleton (`register`/`require`/`reset`/`get`); the
+  one-projectname file shape (owns store → projections → named writes → calls
+  pure fns).
 - **License is NOT BUSL.** Haven is BUSL-1.1 (source-available); the OSS package
   is MIT or Apache-2.0. _(pick one — open decision #5)_
 
@@ -51,9 +53,9 @@ Authority in code, not lint.
 4. **License:** APACHE-2.0 (LICENSE + NOTICE, per-file headers optional). NOT
    BUSL.
 
-5. **Package name:** `@redrixx/nexus` (scope confirmed free — 0 packages under
-   it). Cody to claim the `redrixx` npm account before first publish (free, no
-   domain needed; step 8).
+5. **Package name:** `@redrixx/projectname` (scope confirmed free — 0 packages
+   under it). Cody to claim the `redrixx` npm account before first publish
+   (free, no domain needed; step 8).
 
 ## Build progress
 
@@ -88,8 +90,8 @@ Authority in code, not lint.
 - **CORE FEATURE-COMPLETE for v0.1** (41 tests): cell (one-writer) · entity
   store (strict lifecycle) · registry (composition root) · persistence port.
   Zero deps, host-agnostic build.
-- **Step 5 DONE** (2026-07-10): `packages/react` → `@redrixx/nexus-react`. Hooks
-  `useReader` / `useEntities` / `useEntity` over `useSyncExternalStore`.
+- **Step 5 DONE** (2026-07-10): `packages/react` → `@redrixx/projectname-react`.
+  Hooks `useReader` / `useEntities` / `useEntity` over `useSyncExternalStore`.
   `useEntity` is selective (proven by test: no re-render when a _different_
   entity changes). React + core are peerDeps; adapter carries no logic, just
   subscription. jsdom test env via per-file `@vitest-environment` docblock. 45
@@ -97,18 +99,18 @@ Authority in code, not lint.
 - **DELIVERABLES 1 & 2 COMPLETE.** Core runtime + React adapter, both usable,
   both tested. `useSelector` (derived values) still deferred — footgun-prone;
   add if the demo needs it.
-- **Step 6 DONE** (2026-07-10): `apps/demo` → `@redrixx/nexus-demo`. Vite +
-  React before/after: chat channel with presence, god-hook vs Nexus, toggle,
-  SAME UI (`ui/ChannelView`) off the SAME simulated event stream
-  (`simulator.ts`) so the only difference is state authority. God hook
-  (`godhook/`) exposes setters + one re-render blob; Nexus (`nexus/channel.ts`)
-  wires presence + messages entity stores in one composition root, server
-  handler is sole writer, components are readers (join→upsert,
-  leave→destroyIfPresent, message→spawn). Vite aliases resolve packages from
-  source (no build-order dance; hot reload; bundles clean for deploy).
-  **Verified end-to-end** via headless Chromium: both modes render, presence
-  seeds/churns, local send appears, toggle works; only console noise was a
-  favicon 404 (fixed). Prod build: 202 KB / 64 KB gzip.
+- **Step 6 DONE** (2026-07-10): `apps/demo` → `@redrixx/projectname-demo`.
+  Vite + React before/after: chat channel with presence, god-hook vs
+  projectname, toggle, SAME UI (`ui/ChannelView`) off the SAME simulated event
+  stream (`simulator.ts`) so the only difference is state authority. God hook
+  (`godhook/`) exposes setters + one re-render blob; projectname
+  (`projectname/channel.ts`) wires presence + messages entity stores in one
+  composition root, server handler is sole writer, components are readers
+  (join→upsert, leave→destroyIfPresent, message→spawn). Vite aliases resolve
+  packages from source (no build-order dance; hot reload; bundles clean for
+  deploy). **Verified end-to-end** via headless Chromium: both modes render,
+  presence seeds/churns, local send appears, toggle works; only console noise
+  was a favicon 404 (fixed). Prod build: 202 KB / 64 KB gzip.
 - **DELIVERABLE 3 COMPLETE.** Deliverables 1–3 done (core, React adapter, demo).
 - **Step 7 DONE** (2026-07-10): standalone README (full 30-second pitch,
   storage-vs- authority framing, 60-second tour, React section, "how is this
@@ -131,7 +133,7 @@ Authority in code, not lint.
 
 ## Demo sharpened against the real god hook (2026-07-10)
 
-Cody supplied the real pre-Nexus `useMessages` (commit 040a21d): **~2097
+Cody supplied the real pre-projectname `useMessages` (commit 040a21d): **~2097
 lines**, a 23-dep effect, 4 realtime subs, module-level
 `crossSessionMessageBundleByChannel` caches mutated via exports, ~77 reach-ins
 to `useSocialStore`/`usePermissionsStore`/ `useUserStatusStore`, and a
@@ -144,14 +146,14 @@ but under-sold strawman; sharpened to faithfully include the two worst smells:
   exports. Demo's "Clear from outside the hook" button calls it directly →
   messages 1→0 (verified).
 - `godhook/socialStore.ts`: separate store the hook reaches into for visibility
-  (block). Nexus side owns `blocked` in the SAME composition root, toggled via
-  its retained writer.
+  (block). projectname side owns `blocked` in the SAME composition root, toggled
+  via its retained writer.
 - README + notes panel cite the real 2097-line hook. Verified in-browser:
-  clear-from- outside wipes messages, block hides that author, Nexus "owned"
-  button disabled, no console errors. Skeptical-read caveat logged: Nexus
-  wouldn't shrink the 2097 lines by magic — it makes reader-mutation,
-  module-globals, and silent cross-store reach-ins structurally impossible/loud,
-  and forces ownership into one place.
+  clear-from- outside wipes messages, block hides that author, projectname
+  "owned" button disabled, no console errors. Skeptical-read caveat logged:
+  projectname wouldn't shrink the 2097 lines by magic — it makes
+  reader-mutation, module-globals, and silent cross-store reach-ins structurally
+  impossible/loud, and forces ownership into one place.
 
 ## Deferred (perf/ergonomics, not v0.1 blockers)
 
@@ -174,7 +176,7 @@ but under-sold strawman; sharpened to faithfully include the two worst smells:
 7. Standalone README + "Not yet supported" section
 8. Publish (scoped name) + public repo + deployed demo
 
-## Scaffold fixes queued (redrix-dev/nexus)
+## Scaffold fixes queued (redrix-dev/projectname)
 
 - `package.json`: real name (scoped), `version` → 0.x, replace `main` with
   `exports` map + `types` + `files` + `sideEffects:false` + `engines`; real

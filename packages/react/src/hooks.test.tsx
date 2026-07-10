@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { act, renderHook } from "@testing-library/react";
-import { createCell, createEntityStore } from "@redrixx/nexus";
+import { createCell, createEntityStore } from "@redrixx/projectname";
 import { useEntities, useEntity, useReader } from "./hooks.js";
 
 interface Item {

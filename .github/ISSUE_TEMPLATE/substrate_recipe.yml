@@ -1,5 +1,6 @@
 name: Substrate recipe
-description: Share evidence for a store living inside the Nexus ownership shape.
+description:
+  Share evidence for a store living inside the projectname ownership shape.
 title: "[Recipe]: "
 labels: [recipe]
 body:

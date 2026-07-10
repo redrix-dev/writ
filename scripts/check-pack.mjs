@@ -6,8 +6,8 @@ import process from "node:process";
 const root = process.cwd();
 
 const packages = [
-  { directory: "packages/core", name: "@redrixx/nexus" },
-  { directory: "packages/react", name: "@redrixx/nexus-react" },
+  { directory: "packages/core", name: "@redrixx/projectname" },
+  { directory: "packages/react", name: "@redrixx/projectname-react" },
 ];
 
 const required = [

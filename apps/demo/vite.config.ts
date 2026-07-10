@@ -11,8 +11,10 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@redrixx/nexus-react": fromRoot("../../packages/react/src/index.ts"),
-      "@redrixx/nexus": fromRoot("../../packages/core/src/index.ts"),
+      "@redrixx/projectname-react": fromRoot(
+        "../../packages/react/src/index.ts",
+      ),
+      "@redrixx/projectname": fromRoot("../../packages/core/src/index.ts"),
     },
   },
 });

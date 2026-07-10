@@ -18,8 +18,8 @@
     "noEmit": true,
     "types": ["node"],
     "paths": {
-      "@redrixx/nexus": ["../../packages/core/src/index.ts"],
-      "@redrixx/nexus-react": ["../../packages/react/src/index.ts"]
+      "@redrixx/projectname": ["../../packages/core/src/index.ts"],
+      "@redrixx/projectname-react": ["../../packages/react/src/index.ts"]
     }
   },
   "include": ["src"]

@@ -1,7 +1,7 @@
-# Nexus Extraction — Review & Analysis (v0.1)
+# projectname Extraction — Review & Analysis (v0.1)
 
 _Source reviewed: `redrix-dev/haven` @ `87f657f`. Scaffold reviewed:
-`redrix-dev/nexus` @ `124bbb5`._
+`redrix-dev/projectname` @ `124bbb5`._
 
 ## TL;DR — the uncomfortable finding
 
@@ -9,8 +9,8 @@ _Source reviewed: `redrix-dev/haven` @ `87f657f`. Scaffold reviewed:
 What Haven has is a **pattern** — one that is real, load-bearing, and genuinely
 embodies the "authority over state" thesis — but today it is expressed as:
 
-- a **convention** (per-domain `XxxNexus` classes),
-- a **thin base class** (`apps/mobile/src/data/Nexus.ts`, ~156 lines,
+- a **convention** (per-domain `Xxxprojectname` classes),
+- a **thin base class** (`apps/mobile/src/data/projectname.ts`, ~156 lines,
   Zustand-coupled),
 - a **type** that fakes the one-writer boundary (`ReadableStore` = a store
   handle with `setState` removed), and
@@ -31,23 +31,24 @@ structural instead of lint-enforced. That IS the product.
 
 ---
 
-## 1. Public surface of "Nexus" as it exists in Haven
+## 1. Public surface of "projectname" as it exists in Haven
 
 Haven runs the pattern on two platforms with two reactive substrates:
 
 | Concern                    | Mobile (React Native)                                               | Desktop/Web (Solid)                                                              |
 | -------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Reactive substrate         | vanilla `zustand`                                                   | Solid `createStore`                                                              |
-| Entity base class          | `Nexus<T,R>` (`apps/mobile/src/data/Nexus.ts`)                      | none — each nexus holds a `createStore` directly                                 |
+| Entity base class          | `projectname<T,R>` (`apps/mobile/src/data/projectname.ts`)          | none — each projectname holds a `createStore` directly                           |
 | Composition root           | `HavenReactCore`                                                    | `HavenSolidCore` (`packages/solid-client/src/core/HavenSolidCore.ts`, 490 lines) |
 | Root construction          | `createReactHavenCore(opts)`                                        | `createSolidHavenCore(opts)`                                                     |
 | Root registry (singleton)  | `havenCoreRegistry` (`require`/`reset`)                             | `havenSolidRef.ts` (`register`/`require`/`reset`/`get`)                          |
 | Read boundary (one-writer) | `ReadableStore<S>` type + private `setState`                        | store proxy read-only by convention; writes via named methods                    |
 | React read adapter         | `useStoreSelector` → `useStoreWithEqualityFn` (zustand/traditional) | components read projections directly (Solid)                                     |
 
-### The recurring shape of one nexus (this is the "unit")
+### The recurring shape of one projectname (this is the "unit")
 
-Every domain nexus, on both platforms, is the same five things in one file:
+Every domain projectname, on both platforms, is the same five things in one
+file:
 
 1. **Owns one store** (entity map + domain indexes), created in its constructor.
 2. **Exposes reactive projections** (read side) — memoized selectors over
@@ -60,29 +61,31 @@ Every domain nexus, on both platforms, is the same five things in one file:
    (projection/merge/filter).
 
 Reference implementations to mirror:
-`packages/solid-client/src/data/channels/channelSolidNexus.ts` (Solid template)
-and `apps/mobile/src/data/channels/ChannelNexus.ts` (React template).
+`packages/solid-client/src/data/channels/channelSolidprojectname.ts` (Solid
+template) and `apps/mobile/src/data/channels/Channelprojectname.ts` (React
+template).
 
 ### The reusable primitives (what's actually generic)
 
 Stripped of domain, these are the pieces worth extracting:
 
-- **Entity map + CRUD** — `Record<id, NexusEntry<T>>` where
-  `NexusEntry = { data, partial, cachedAt }`; ops `getOrCreate` / `getOrPartial`
-  / `update` / `delete` / `has` / `getSnapshot` (`Nexus.ts`,
-  `core/cache/entityTypes.ts`).
+- **Entity map + CRUD** — `Record<id, projectnameEntry<T>>` where
+  `projectnameEntry = { data, partial, cachedAt }`; ops `getOrCreate` /
+  `getOrPartial` / `update` / `delete` / `has` / `getSnapshot`
+  (`projectname.ts`, `core/cache/entityTypes.ts`).
 - **One-writer boundary** —
   `ReadableStore<S> = Pick<StoreApi<S>, "getState" | "getInitialState" | "subscribe">`
-  (`packages/shared/src/nexus/storeTypes.ts`). This is the whole authority
+  (`packages/shared/src/projectname/storeTypes.ts`). This is the whole authority
   mechanism, and it's ~4 lines.
-- **Persistence port** — `NexusPersistence { getString/set/remove }`
-  (`core/persistence/NexusPersistence.ts`) + in-memory/localStorage adapters.
+- **Persistence port** — `projectnamePersistence { getString/set/remove }`
+  (`core/persistence/projectnamePersistence.ts`) + in-memory/localStorage
+  adapters.
 - **Composition-root registry** — `register` / `require` / `reset` / `get`
   singleton (`havenSolidRef.ts`, ~24 lines).
 - **Framework-free event routing** — `routeRealtimeEvent(target, evt)` over a
   `RealtimeMutationTarget` interface. **Haven-specific in content**, but the
   _shape_ (a pure reducer that mutates through a narrow capability interface) is
-  the pattern Nexus should teach.
+  the pattern projectname should teach.
 
 ---
 
@@ -90,10 +93,10 @@ Stripped of domain, these are the pieces worth extracting:
 
 Ranked by how load-bearing they are:
 
-1. **Zustand & Solid as the substrate.** `Nexus.ts` imports `zustand`; Solid
-   nexuses import `solid-js/store`. Core must ship its **own** tiny vanilla
-   store (getState / subscribe / private set) so "zero dependencies" is true and
-   the React adapter is a `useSyncExternalStore` one-liner.
+1. **Zustand & Solid as the substrate.** `projectname.ts` imports `zustand`;
+   Solid projectnamees import `solid-js/store`. Core must ship its **own** tiny
+   vanilla store (getState / subscribe / private set) so "zero dependencies" is
+   true and the React adapter is a `useSyncExternalStore` one-liner.
 2. **Every composition root is 100% Haven domain.** `HavenSolidCore` news up
    `communities`, `channels`, `messages`, `voice`, `permissions`, … and
    orchestrates `bootstrapSession` phases, viewer-message-policy sync, Supabase
@@ -103,26 +106,29 @@ Ranked by how load-bearing they are:
    (`MessageBundle`, `LiveProfileIdentity`, community/channel/DM/report
    payloads). The _idea_ (route events through a narrow mutation capability) is
    portable; the interface is not.
-4. **`NexusEntry.partial` / `cachedAt`** — the partial-hydration + cache-age
-   model is a Haven data-fetching concern. Nexus core should treat entities as
-   opaque values; partial/stale is a userland concern (or a v0.2 opt-in), not a
-   core field.
+4. **`projectnameEntry.partial` / `cachedAt`** — the partial-hydration +
+   cache-age model is a Haven data-fetching concern. projectname core should
+   treat entities as opaque values; partial/stale is a userland concern (or a
+   v0.2 opt-in), not a core field.
 5. **`revision` counter** — already vestigial in Haven (Solid ignores it; the
    recipe says "do not use it for reactivity"). Do not carry it over.
-6. **Storage key convention** `haven:nexus:<type>:<instance>` and
-   `NEXUS_STORAGE_KEYS` — Haven namespacing. Core takes a caller-supplied key.
+6. **Storage key convention** `haven:projectname:<type>:<instance>` and
+   `projectname_STORAGE_KEYS` — Haven namespacing. Core takes a caller-supplied
+   key.
 7. **Backends / `sessionBackendRegistry` / `AppHost` / `ViewerMessagePolicy`** —
    entirely Haven. Not in scope.
 
 **Haven-shaped assumptions to actively resist** (the acceptance test is "zero
 Haven-shaped assumptions"):
 
-- _"A nexus fetches from a backend."_ No — a nexus **owns state**. Fetching is
-  one thing an owner might do. Core must not assume a `load()`/backend at all.
+- _"A projectname fetches from a backend."_ No — a projectname **owns state**.
+  Fetching is one thing an owner might do. Core must not assume a
+  `load()`/backend at all.
 - _"One writer == one domain store."_ Haven enforces one-writer at the **store**
-  granularity (the ChannelNexus owns _all_ channels; any holder can update any
-  channel). The tagline says "every **entity** has exactly one owner." These are
-  not the same claim — see Fork B below. Be honest about which one v0.1 ships.
+  granularity (the Channelprojectname owns _all_ channels; any holder can update
+  any channel). The tagline says "every **entity** has exactly one owner." These
+  are not the same claim — see Fork B below. Be honest about which one v0.1
+  ships.
 - _"Realtime is part of the model."_ It isn't; it's an input source. Keep it out
   of core.
 
@@ -170,7 +176,7 @@ export function createRegistry<T>(name: string): {
   reset(): void;
 };
 
-// ── persistence port (Haven's NexusPersistence, unchanged) ────────
+// ── persistence port (Haven's projectnamePersistence, unchanged) ────────
 export interface Persistence {
   getString(key: string): string | null;
   set(key: string, value: string): void;
@@ -235,24 +241,24 @@ called and the owners are wired together; `.reader`s are what leave that file.
 Each step is independently shippable/testable — fast feedback, no big-bang.
 
 1. **Persistence port + memory adapter.** Smallest, zero-risk, unblocks tests.
-   (Direct lift of `NexusPersistence` + `createMemoryPersistence`.)
+   (Direct lift of `projectnamePersistence` + `createMemoryPersistence`.)
 2. **Vanilla store + capability split** (`Reader` / writer). The heart. Prove
    one-writer structurally with a test that shows readers have no write method.
 3. **Entity store** (`createEntityStore`: spawn/update/destroy/clear + entity
-   map + optional persistence). Port CRUD semantics from `Nexus.ts`, drop
+   map + optional persistence). Port CRUD semantics from `projectname.ts`, drop
    `partial`/`cachedAt`/`revision`.
 4. **Registry** (`createRegistry`) — lift `havenSolidRef.ts` generalized.
 5. **React adapter package** — `useEntities`/`useEntity`/`useSelector` via
    `useSyncExternalStore`. Prove core works with zero adapter first.
 6. **Before/after demo** — chat-channel-with-presence slice: god-hook version
-   vs. Nexus version, side by side (presence = entities being born/dying, so
-   lifecycle is visible). This is also the honesty check on the whole API.
+   vs. projectname version, side by side (presence = entities being born/dying,
+   so lifecycle is visible). This is also the honesty check on the whole API.
 7. **README that stands alone** + "Not yet supported" non-goals section.
 8. **Publish** (scoped name — see below) + public repo + deployed demo.
 
 ---
 
-## 5. Scaffold review (`redrix-dev/nexus`) vs. modern TS-library standards
+## 5. Scaffold review (`redrix-dev/projectname`) vs. modern TS-library standards
 
 The `tsconfig.json` is genuinely modern and good (nodenext, `declaration` +
 `declarationMap` + `sourceMap`, `strict`, `noUncheckedIndexedAccess`,
@@ -265,9 +271,10 @@ Everything else in the scaffold needs work before it can publish:
 
 **`package.json` — blockers:**
 
-- `"name": "nexus"` **cannot be published** — taken on npm (a deprecated GraphQL
-  lib, `nexus@1.3.0`). Needs a scoped name, e.g. `@redrixx/nexus` /
-  `@redrixx/nexus-core`, or a distinct unscoped name. **Decision needed.**
+- `"name": "projectname"` **cannot be published** — taken on npm (a deprecated
+  GraphQL lib, `projectname@1.3.0`). Needs a scoped name, e.g.
+  `@redrixx/projectname` / `@redrixx/projectname-core`, or a distinct unscoped
+  name. **Decision needed.**
 - `"version": "1.0.0"` — wrong signal for a pre-release. Start at `0.0.0` (or
   `0.1.0`).
 - `"main": "index.js"` — points at a non-existent root JS file; build emits to
@@ -327,5 +334,5 @@ Everything else in the scaffold needs work before it can publish:
 2. **Authority granularity** — one-writer-per-store (Haven-accurate) vs
    per-entity (tagline-literal).
 3. **Reactive substrate** — ship-own vanilla store vs BYO-store adapter.
-4. **Package name** — scoped name to use (npm `nexus` is taken).
+4. **Package name** — scoped name to use (npm `projectname` is taken).
 5. **License** — MIT vs Apache-2.0 (not BUSL).

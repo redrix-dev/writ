@@ -1,8 +1,8 @@
 /**
- * @redrixx/nexus — an authority-oriented entity-lifecycle state runtime.
+ * @redrixx/projectname — a substrate-agnostic ownership and entity-lifecycle contract.
  *
- * Nexus creates separate writer and reader capabilities. Code holding only a
- * reader has no Nexus mutation method; sharing a writer shares its authority.
+ * projectname creates separate writer and reader capabilities. Code holding only a
+ * reader has no projectname mutation method; sharing a writer shares its authority.
  */
 
 export { createCell, type Reader, type Writer } from "./store.js";

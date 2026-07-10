@@ -6,7 +6,7 @@ import type { Message, User } from "./types.js";
  * authority — not what data they receive.
  *
  * Presence churn (join/leave) is the point: a user joining is an entity being
- * born, a user leaving is an entity dying. The Nexus version makes that literal
+ * born, a user leaving is an entity dying. The projectname version makes that literal
  * (spawn/destroy); the god hook buries it in a reducer.
  */
 

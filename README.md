@@ -1,29 +1,33 @@
-# Nexus
+# projectname
 
-**Make authority a capability, not a convention.**
+> `projectname` is a temporary, repository-wide placeholder for the upcoming
+> project name.
+
+**One ownership and lifecycle model across state systems.**
 
 Highly subscribed state becomes difficult when realtime events, optimistic
 actions, persistence, policy, and UI code can all affect the same entities.
-Nexus gives that state an explicit owner, separates writer and reader
+projectname gives that state an explicit owner, separates writer and reader
 capabilities, and makes entity existence changes deliberate.
 
-Nexus is a small authority and lifecycle layer for hot shared application state:
-high-churn state with many observers, recurring external events, dynamic entity
-collections, and deliberately restricted mutation authority.
+projectname is a small, adoptable contract for shared application state. It
+gives teams a consistent way to express ownership, observation, and entity
+lifecycle while continuing to use the state tools they already know.
 
 Representative workloads include realtime messaging, presence, permissions,
 roles, multiplayer state, collaborative editors, device telemetry, voice
 sessions, long-lived desktop clients, and offline or reconnected systems.
 
 State libraries provide storage, reactivity, selectors, update propagation, and
-mature tooling. Nexus complements them by organizing who owns those stores, who
-receives write authority, when scoped stores exist, and how entity birth and
-death are expressed. In shorthand: **State libraries manage storage; Nexus
-manages authority.**
+mature tooling. projectname does not duplicate those benefits. It supplies a
+shared API shape for who owns a store, who receives a writer or reader, when a
+scoped store exists, and whether an entity is created, updated, upserted, or
+destroyed. The same vocabulary can sit over Zustand, Redux, Solid, a hand-rolled
+store, or the included zero-dependency cell.
 
-- **Separate capabilities.** Nexus creates one writer capability and a separate
-  reader capability. Consumers holding only the reader cannot write through that
-  handle because readers expose no Nexus mutation method.
+- **Separate capabilities.** projectname creates one writer capability and a
+  separate reader capability. Consumers holding only the reader cannot write
+  through that handle because readers expose no projectname mutation method.
 - **Asserted entity existence.** `spawn` and `destroy` are strict by default, so
   duplicate creation and missing destruction are reported instead of becoming
   incidental map edits. This is an existence lifecycle, not a model of every
@@ -32,14 +36,18 @@ manages authority.**
   reader-and-command surface without exposing raw writers. Each registry is one
   strict named slot; an application may deliberately have multiple composition
   roots or registries.
+- **Substrate-agnostic adoption.** Keep the state system that fits the workload
+  while giving owners and consumers the same recognizable surfaces across
+  features.
 
-The `@redrixx/nexus` core has zero runtime dependencies and is
+The `@redrixx/projectname` core has zero runtime dependencies and is
 framework-agnostic. Official UI support currently consists of the React adapter
 that ships in this repository; adapters and examples may have dependencies.
 
-## When Nexus earns its keep
+## Where projectname fits
 
-Nexus is most useful when:
+projectname is designed for shared state that benefits from a visible ownership
+boundary. Common examples include:
 
 - Several independent event sources converge on the same state.
 - State instances are created dynamically by tenant, community, channel,
@@ -49,40 +57,37 @@ Nexus is most useful when:
 - Contributors routinely need to determine who is allowed to change something.
 - Store lifetime and subscription cleanup matter.
 
-Realtime messaging, collaborative editing, multiplayer sessions, device
-telemetry, and long-lived offline/reconnected clients often have several of
-these properties at once.
+These patterns often appear in realtime messaging, collaborative editing,
+multiplayer sessions, device telemetry, and long-lived offline or reconnected
+clients. They can also emerge gradually in an otherwise straightforward
+application as features and event sources multiply.
 
-## When Nexus is unnecessary
+For state with a single, obvious owner—such as a local input or a small form—the
+same ownership ideas can remain implicit. projectname can be introduced where a
+clear reader/writer split or explicit lifecycle adds value, without requiring an
+application-wide migration.
 
-Prefer the simpler native solution for:
+## How projectname works with other tools
 
-- Local component state.
-- Simple forms.
-- Static configuration.
-- Straightforward request/response pages.
-- State already cleanly owned by one small feature.
-- Server state better handled by a query or cache library.
+projectname focuses on ownership and lifecycle. Zustand, Redux, Jotai, Solid
+stores, RxJS, and other substrates continue to provide storage, reactivity,
+selectors, performance characteristics, and ecosystem tooling. Query and cache
+libraries can continue to manage server state, and state-machine or actor
+runtimes can continue to model richer transitions.
 
-## What Nexus is not
-
-Nexus is not:
-
-- A replacement for Zustand, Redux, Jotai, Solid stores, or RxJS.
-- A server-state cache or data-fetching library.
-- A forms or local-component-state solution.
-- A complete state-machine runtime.
-- A security boundary.
-- Intended for every piece of application state.
+Adoption standardizes the API presented to owners and consumers; it does not
+require moving state into a second store. The boundary is a capability and API
+boundary rather than a security sandbox.
 
 ## Authority means…
 
 - **Owner:** the domain object or module responsible for a store's policy and
   lifetime. It normally retains the writer capability.
-- **Writer capability:** the object with Nexus mutation methods such as `set`,
-  `spawn`, `update`, and `destroy`. Anyone holding it can use that authority.
+- **Writer capability:** the object with projectname mutation methods such as
+  `set`, `spawn`, `update`, and `destroy`. Anyone holding it can use that
+  authority.
 - **Reader:** a separate object with observation methods such as `get` and
-  `subscribe`, but no Nexus mutation method.
+  `subscribe`, but no projectname mutation method.
 - **Command:** a narrow domain operation such as `sendMessage` or `blockUser`
   that an owner deliberately publishes instead of its raw writer.
 - **Composition root:** a place where owners are constructed, external events
@@ -92,27 +97,27 @@ Nexus is not:
 Ambient access is compatible with this model when it exposes the intentional
 reader-and-command surface rather than raw writer capabilities.
 
-## Authority does not mean…
+## Practical boundaries
 
-Nexus makes disciplined ownership easy and visible; it does not identify one
-human or module as the owner at runtime. A writer can still be deliberately
+projectname makes disciplined ownership easy and visible; it does not identify
+one human or module as the owner at runtime. A writer can still be deliberately
 exported, leaked, or passed to multiple callers, and every holder then shares
 its authority. This is a capability and API boundary, not protection against
 malicious code, `as any`, unsafe casts, reflection, or direct mutation of
 values.
 
-Nexus also does not provide deep runtime immutability. If `get()` returns a
-mutable object, array, collection, or nested reference, a consumer can mutate
-that value without a Nexus mutation method. Prefer immutable updates and expose
-readonly state types at public reader boundaries.
+projectname also does not provide deep runtime immutability. If `get()` returns
+a mutable object, array, collection, or nested reference, a consumer can mutate
+that value without a projectname mutation method. Prefer immutable updates and
+expose readonly state types at public reader boundaries.
 
-Nexus does not write domain policy, guarantee correct commands, or model every
-valid domain transition. It makes authority and asserted entity existence
-visible; it does not make an application automatically correct.
+Domain policy and command design remain application concerns. projectname makes
+authority and asserted entity existence visible so those decisions have a clear
+place to live.
 
 ## Three separable pieces
 
-Nexus-shaped state has three independent layers:
+projectname-shaped state has three independent layers:
 
 1. **Reactive substrate:** the built-in cell, Zustand, Redux, Solid, or another
    store supplies storage, subscriptions, selectors, and update propagation.
@@ -121,15 +126,16 @@ Nexus-shaped state has three independent layers:
 3. **Public surface:** consumers receive readers and narrow domain commands,
    rather than unrestricted store mutation.
 
-The built-in cell is a small zero-dependency default, not a requirement to
-abandon an existing state library.
+The built-in cell is the batteries-included, zero-dependency adoption path. It
+provides the contract directly when another substrate is unnecessary; it is not
+a requirement to abandon an existing state library or its performance model.
 
 ## Install
 
 ```bash
-npm install @redrixx/nexus
+npm install @redrixx/projectname
 # optional React bindings:
-npm install @redrixx/nexus-react
+npm install @redrixx/projectname-react
 ```
 
 Both packages are **ESM-only**. CommonJS consumers must use dynamic `import()`.
@@ -143,7 +149,7 @@ runtime dependencies.
 The smallest unit creates one writer capability and its reader.
 
 ```ts
-import { createCell } from "@redrixx/nexus";
+import { createCell } from "@redrixx/projectname";
 
 const count = createCell(0);
 
@@ -154,13 +160,13 @@ counter.get(); // 1
 counter.subscribe(() => {
   /* re-read */
 });
-// counter.set  ← does not exist. Readers expose no Nexus mutation method.
+// counter.set  ← does not exist. Readers expose no projectname mutation method.
 ```
 
 ### An entity collection with asserted existence
 
 ```ts
-import { createEntityStore } from "@redrixx/nexus";
+import { createEntityStore } from "@redrixx/projectname";
 
 const users = createEntityStore<{ name: string; online: boolean }>();
 
@@ -192,7 +198,7 @@ have more than one composition root or registry.
 
 ```ts
 // composition-root.ts
-import { createEntityStore, createRegistry } from "@redrixx/nexus";
+import { createEntityStore, createRegistry } from "@redrixx/projectname";
 
 export const app = createRegistry<AppState>("AppState");
 
@@ -209,7 +215,7 @@ export function bootstrap(events: EventSource) {
 ```
 
 ```ts
-// anywhere else — no Nexus mutation method is exposed
+// anywhere else — no projectname mutation method is exposed
 import { app } from "./composition-root.js";
 const { users } = app.require();
 ```
@@ -223,7 +229,7 @@ narrow `sendMessage` command, routes realtime callbacks through itself, and is
 explicitly disposed when the channel leaves scope.
 
 ```ts
-import { createEntityStore, type EntityReader } from "@redrixx/nexus";
+import { createEntityStore, type EntityReader } from "@redrixx/projectname";
 
 type Message = Readonly<{
   id: string;
@@ -294,18 +300,18 @@ class CommunityOwner {
 ```
 
 The reactive substrate inside `ChannelOwner` could instead be a vanilla Zustand
-store, Redux store, Solid store, or hand-rolled external store. The Nexus-shaped
-decision is who retains its mutation capability, what consumers receive, and
-when that scoped instance is disposed.
+store, Redux store, Solid store, or hand-rolled external store. The
+projectname-shaped decision is who retains its mutation capability, what
+consumers receive, and when that scoped instance is disposed.
 
 ## React
 
-`@redrixx/nexus-react` is a thin binding: components subscribe as _readers_. The
-hooks expose no Nexus mutation method; mutation normally lives on an owner or a
-narrow command wired at a composition root.
+`@redrixx/projectname-react` is a thin binding: components subscribe as
+_readers_. The hooks expose no projectname mutation method; mutation normally
+lives on an owner or a narrow command wired at a composition root.
 
 ```tsx
-import { useEntities, useEntity } from "@redrixx/nexus-react";
+import { useEntities, useEntity } from "@redrixx/projectname-react";
 
 function Roster({ users }: { users: EntityReader<User> }) {
   const map = useEntities(users); // re-renders when the set changes
@@ -321,20 +327,21 @@ function Status({ users, id }: { users: EntityReader<User>; id: string }) {
 Core is fully usable without React; the adapter is ~30 lines over
 `useSyncExternalStore`.
 
-## How is this different from a state library?
+## How does this work with a state library?
 
 A well-structured Zustand, Redux, Jotai, Solid, or RxJS application can already
-restrict mutation by convention and through its own APIs. Nexus adds an explicit
-capability split: an owner retains the writer while most consumers receive only
-a reader and narrow commands. It does not replace the underlying library's
-storage, reactivity, selectors, update propagation, DevTools, or ecosystem.
+define strong module boundaries. projectname makes one ownership and lifecycle
+shape reusable across those choices: an owner retains the writer while most
+consumers receive a reader and narrow commands, and entity operations use the
+same explicit verbs. The underlying library still supplies storage, reactivity,
+selectors, update propagation, DevTools, and ecosystem integrations.
 
 See the [before/after demo](./apps/demo) — the same chat channel built as a god
-hook and as Nexus, side by side.
+hook and as projectname, side by side.
 
 For typechecked built-in, hand-rolled, Zustand, Redux Toolkit, and Solid
 recipes, including fair native comparisons and dynamically scoped variants, see
-[State libraries inside the Nexus shape](./apps/state-library-recipes).
+[State libraries inside the projectname shape](./apps/state-library-recipes).
 
 ## Anti-patterns
 
@@ -344,57 +351,61 @@ recipes, including fair native comparisons and dynamically scoped variants, see
   the intended application surface, not relocate ambient mutation.
 - **Turning a root into another god object.** Keep policy and lifetime with
   focused domain owners; use the root to assemble and connect them.
-- **Using Nexus for every boolean and input field.** Local state should stay
-  local when shared authority and lifecycle are not real concerns.
+- **Moving local state into shared ownership without a concrete need.** Keep
+  state close to its consumers and introduce projectname where the ownership
+  boundary is useful.
 - **Allowing owners to reach into unrelated owners.** Route an explicit command
   or event across the boundary so the responsible owner retains its policy.
 - **Defaulting to `upsert` because strict transitions exposed bugs.** Decide
   whether replay or replacement is valid before making a failure lenient.
 - **Returning mutable collections through supposedly readonly APIs.** Reader
-  handles remove Nexus mutation methods; readonly types and immutable values are
-  still required for a meaningful public boundary.
+  handles remove projectname mutation methods; readonly types and immutable
+  values are still required for a meaningful public boundary.
 
 ## FAQ
 
 ### Why not just keep Zustand setters private?
 
-Do that when it is enough. A disciplined Zustand module can provide a strong
-boundary. Nexus is useful when you want the same explicit reader/writer shape,
-strict entity-existence operations, and scoped ownership conventions across
-stores and features. It adds ceremony, so the return should be concrete.
+A disciplined Zustand module can provide a strong boundary. projectname makes
+that shape portable and recognizable across stores and features: readers,
+writers, lifecycle verbs, and scoped owners use the same vocabulary even when
+the underlying state system changes.
 
 ### How is this different from Redux dispatch?
 
 Redux already provides centralized transitions, actions, reducers, middleware,
-and excellent tooling. Nexus does not replace those. The additional question is
-who receives `dispatch`, who receives observation only, and who owns and
-disposes dynamically scoped Redux store instances.
+and excellent tooling. projectname does not replace those. The additional
+question is who receives `dispatch`, who receives observation only, and who owns
+and disposes dynamically scoped Redux store instances.
 
 ### How is this related to actors?
 
-Both emphasize ownership and message-like commands. Nexus does not provide an
-actor scheduler, mailbox, supervision tree, isolation, or a complete transition
-runtime. It is a small capability and lifecycle layer that can be used inside an
-actor-shaped architecture.
+Both emphasize ownership and message-like commands. projectname does not provide
+an actor scheduler, mailbox, supervision tree, isolation, or a complete
+transition runtime. It is a small capability and lifecycle layer that can be
+used inside an actor-shaped architecture.
 
-### Does Nexus replace my store?
+### Does projectname replace my store?
 
-No. Use the built-in cell if its small feature set is sufficient, or retain
-Zustand, Redux, Solid, or another substrate for storage and reactivity. Nexus
-organizes ownership and the public capability surface around it.
+No. Retain Zustand, Redux, Solid, or another substrate when it fits the
+workload. Use the built-in cell when a small zero-dependency implementation is
+sufficient. In either case, projectname organizes ownership, lifecycle, and the
+public reader/writer surface around the chosen substrate.
 
 ### Can I use it without React?
 
-Yes. `@redrixx/nexus` is framework-agnostic and has zero runtime dependencies.
-`@redrixx/nexus-react` is the currently shipped optional UI adapter.
+Yes. `@redrixx/projectname` is framework-agnostic and has zero runtime
+dependencies. `@redrixx/projectname-react` is the currently shipped optional UI
+adapter.
 
-### Can Nexus guarantee one human or module writer?
+### Can projectname guarantee one human or module writer?
 
 No. It creates one writer capability and a separate reader capability. The
-writer can be exported or shared, and then every holder has authority. Nexus
-makes disciplined ownership visible; it does not identify an owner at runtime.
+writer can be exported or shared, and then every holder has authority.
+projectname makes disciplined ownership visible; it does not identify an owner
+at runtime.
 
-### Is Nexus useful without strict entity lifecycle?
+### Is projectname useful without strict entity lifecycle?
 
 Potentially. The reader/writer split and ownership topology can stand alone, and
 `createCell` has no entity lifecycle. For entity collections, strict operations
@@ -439,8 +450,9 @@ verified gates and explicitly deferred release actions.
 
 ## Adoption guides
 
-Start with [Should this feature use Nexus?](./docs/adoption/decision-tree.md),
-then follow the relevant migration path:
+Start with
+[Should this feature use projectname?](./docs/adoption/decision-tree.md), then
+follow the relevant migration path:
 
 - [From an ambient module store](./docs/adoption/from-ambient-store.md)
 - [From a global Zustand store to scoped factories](./docs/adoption/from-global-zustand.md)
@@ -453,10 +465,10 @@ The [adoption index](./docs/adoption) connects the full set.
 
 ## Packages
 
-| Package                                    | What it is                                                 |
-| ------------------------------------------ | ---------------------------------------------------------- |
-| [`@redrixx/nexus`](./packages/core)        | The framework-agnostic runtime. Zero runtime dependencies. |
-| [`@redrixx/nexus-react`](./packages/react) | React bindings.                                            |
+| Package                                          | What it is                                                 |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| [`@redrixx/projectname`](./packages/core)        | The framework-agnostic runtime. Zero runtime dependencies. |
+| [`@redrixx/projectname-react`](./packages/react) | React bindings.                                            |
 
 ## License
 

@@ -1,6 +1,6 @@
 # Public API reference
 
-## `@redrixx/nexus`
+## `@redrixx/projectname`
 
 ### `createCell<S>(initial): Writer<S>`
 
@@ -14,7 +14,7 @@ a changed value.
 - `subscribe(listener): () => void` — registers a synchronous post-commit
   listener and returns cleanup.
 
-Readers contain no Nexus mutation method. Values are not deep-frozen.
+Readers contain no projectname mutation method. Values are not deep-frozen.
 
 ### `Writer<S>`
 
@@ -77,7 +77,7 @@ call `reset` explicitly before replacement.
 - `get(): T | null`
 - `reset(): void`
 
-## `@redrixx/nexus-react`
+## `@redrixx/projectname-react`
 
 ### `useReader<S>(reader): S`
 

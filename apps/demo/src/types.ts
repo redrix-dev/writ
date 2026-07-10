@@ -1,4 +1,4 @@
-/** Shared domain types. Both the god-hook and the Nexus version use these. */
+/** Shared domain types. Both the god-hook and the projectname version use these. */
 
 export interface User {
   id: string;

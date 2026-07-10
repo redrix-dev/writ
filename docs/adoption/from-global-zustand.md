@@ -42,8 +42,8 @@ class ChannelOwner {
 }
 ```
 
-If the current class/module already does this well, Nexus may add little beyond
-shared terminology and lifecycle conventions.
+If the current class/module already does this well, projectname may add little
+beyond shared terminology and lifecycle conventions.
 
 ## 3. Add a keyed owner registry
 
@@ -68,5 +68,5 @@ replay method rather than the strict live-event path when duplicates are valid.
 decided, and delete the owner. Leaving a community disposes every child channel.
 
 See the typechecked
-[Nexus-shaped Zustand recipe](../../apps/state-library-recipes/src/zustand-nexus-shaped.ts)
+[projectname-shaped Zustand recipe](../../apps/state-library-recipes/src/zustand-projectname-shaped.ts)
 and the [complete nested registry](./dynamic-registry.md).

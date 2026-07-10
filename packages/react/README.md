@@ -1,30 +1,31 @@
-# @redrixx/nexus-react
+# @redrixx/projectname-react
 
 React bindings for
-[`@redrixx/nexus`](https://www.npmjs.com/package/@redrixx/nexus). Deliberately
-thin: components subscribe as **readers**. The hooks expose no Nexus mutation
-method; mutation normally lives on an owner or narrow command.
+[`@redrixx/projectname`](https://www.npmjs.com/package/@redrixx/projectname).
+Deliberately thin: components subscribe as **readers**. The hooks expose no
+projectname mutation method; mutation normally lives on an owner or narrow
+command.
 
-Nexus complements React state libraries rather than replacing them: those
-libraries provide storage and reactivity, while Nexus organizes ownership, write
-authority, scoped store lifetime, and entity lifecycle. It is intended for hot
-shared state with many observers and external event sources, not forms or local
-component state.
+projectname layers a shared ownership and lifecycle API over React state
+libraries rather than replacing them. Those libraries retain storage,
+reactivity, selectors, tooling, and performance behavior; projectname makes
+reader/writer surfaces, scoped store lifetime, and entity lifecycle consistent
+across them.
 
 The framework-agnostic claim applies to the core package. This package is the
 currently shipped official UI adapter and requires React 18 or newer. Its hooks
-expose no Nexus mutation method; they do not deep-freeze returned values.
+expose no projectname mutation method; they do not deep-freeze returned values.
 
 ```bash
-npm install @redrixx/nexus @redrixx/nexus-react
+npm install @redrixx/projectname @redrixx/projectname-react
 ```
 
 This package is **ESM-only**. It supports React 18 and newer and has no CommonJS
 `require` entry point.
 
 ```tsx
-import type { EntityReader } from "@redrixx/nexus";
-import { useReader, useEntities, useEntity } from "@redrixx/nexus-react";
+import type { EntityReader } from "@redrixx/projectname";
+import { useReader, useEntities, useEntity } from "@redrixx/projectname-react";
 
 function Roster({ users }: { users: EntityReader<User> }) {
   const map = useEntities(users); // re-renders when the collection changes
@@ -46,5 +47,5 @@ All three are built on `useSyncExternalStore`. Requires React 18+.
 
 ## License
 
-[Apache-2.0](https://github.com/redrix-dev/nexus/blob/main/LICENSE) © Cody
+[Apache-2.0](https://github.com/redrix-dev/projectname/blob/main/LICENSE) © Cody
 Magnuson (Redrixx)

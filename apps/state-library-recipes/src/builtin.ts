@@ -1,4 +1,4 @@
-import { createEntityStore, type EntityReader } from "@redrixx/nexus";
+import { createEntityStore, type EntityReader } from "@redrixx/projectname";
 import type { Message, RealtimeSource } from "./shared.js";
 
 export class BuiltInChannelOwner {

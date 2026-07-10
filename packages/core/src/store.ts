@@ -1,8 +1,10 @@
 /**
- * The reactive substrate — and the authority boundary.
+ * The batteries-included reactive substrate and reference capability split.
  *
- * `createCell` creates one {@link Writer} capability and a separate reader.
- * The `reader` property has `get` and `subscribe`, but no Nexus mutation method.
+ * `createCell` is the zero-dependency path for adopting the shared
+ * reader/writer contract without bringing another state library. It creates one
+ * {@link Writer} capability and a separate reader.
+ * The `reader` property has `get` and `subscribe`, but no projectname mutation method.
  * Code holding only that handle cannot write through it. The writer can still
  * be deliberately shared, and mutable values returned by `get` are not deeply
  * frozen; prefer readonly state types and immutable updates at public boundaries.
@@ -11,7 +13,7 @@
  * React's `useSyncExternalStore` wants, so the React adapter is a one-liner.
  */
 
-/** A handle with no Nexus mutation method. Returned values are not deep-frozen. */
+/** A handle with no projectname mutation method. Returned values are not deep-frozen. */
 export interface Reader<S> {
   /** Current value. Cheap; call it inside a selector/snapshot. */
   get(): S;

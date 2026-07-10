@@ -1,7 +1,7 @@
 {
-  "name": "@redrixx/nexus-react",
+  "name": "@redrixx/projectname-react",
   "version": "0.1.0",
-  "description": "React bindings for @redrixx/nexus — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
+  "description": "React bindings for @redrixx/projectname — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
   "type": "module",
   "exports": {
     ".": {
@@ -26,26 +26,26 @@
     "react",
     "hooks",
     "state-management",
-    "nexus",
+    "projectname",
     "useSyncExternalStore"
   ],
   "author": "Cody Magnuson (redrixx)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/redrix-dev/nexus.git",
+    "url": "git+https://github.com/redrix-dev/projectname.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/redrix-dev/nexus#readme",
+  "homepage": "https://github.com/redrix-dev/projectname#readme",
   "bugs": {
-    "url": "https://github.com/redrix-dev/nexus/issues"
+    "url": "https://github.com/redrix-dev/projectname/issues"
   },
   "peerDependencies": {
-    "@redrixx/nexus": "^0.1.0",
+    "@redrixx/projectname": "^0.1.0",
     "react": ">=18"
   },
   "devDependencies": {
-    "@redrixx/nexus": "*",
+    "@redrixx/projectname": "*",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",

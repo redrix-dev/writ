@@ -14,7 +14,7 @@
     "noEmit": true,
     "types": [],
     "paths": {
-      "@redrixx/nexus": ["../../packages/core/src/index.ts"]
+      "@redrixx/projectname": ["../../packages/core/src/index.ts"]
     }
   },
   "include": ["src"]

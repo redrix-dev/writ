@@ -1,6 +1,6 @@
-import { createEntityStore } from "@redrixx/nexus";
+import { createEntityStore } from "@redrixx/projectname";
 
-export type Mode = "ambient" | "native" | "nexus";
+export type Mode = "ambient" | "native" | "projectname";
 export type Result = "accepted" | "rejected" | "ignored";
 
 export type DemoEvent = Readonly<{
@@ -163,7 +163,8 @@ type Scope = {
   messages: Map<string, DemoMessage>;
   presence: Set<string>;
   blockedAuthors: Set<string>;
-  nexusMessages: ReturnType<typeof createEntityStore<DemoMessage>> | undefined;
+  projectnameMessages:
+    ReturnType<typeof createEntityStore<DemoMessage>> | undefined;
   disposed: boolean;
   persisted: boolean;
 };
@@ -276,7 +277,7 @@ export class EvidenceRuntime {
           scope.disposed = true;
           scope.messages.clear();
           scope.presence.clear();
-          scope.nexusMessages?.clear();
+          scope.projectnameMessages?.clear();
           transition = "active → disposed";
           detail = "subscriptions cleaned; in-memory state released";
           notified.push("scope panel", "channel view");
@@ -331,10 +332,10 @@ export class EvidenceRuntime {
           detail = "duplicate spawn exposed an invalid transition";
         } else {
           scope.messages.set(id, message);
-          if (scope.nexusMessages) {
-            if (scope.nexusMessages.reader.has(id))
-              scope.nexusMessages.upsert(id, message);
-            else scope.nexusMessages.spawn(id, message);
+          if (scope.projectnameMessages) {
+            if (scope.projectnameMessages.reader.has(id))
+              scope.projectnameMessages.upsert(id, message);
+            else scope.projectnameMessages.spawn(id, message);
           }
           transition = duplicate ? "present → replaced" : "absent → present";
           detail =
@@ -372,8 +373,10 @@ export class EvidenceRuntime {
       messages: new Map(),
       presence: new Set(),
       blockedAuthors: new Set(),
-      nexusMessages:
-        this.mode === "nexus" ? createEntityStore<DemoMessage>() : undefined,
+      projectnameMessages:
+        this.mode === "projectname"
+          ? createEntityStore<DemoMessage>()
+          : undefined,
       disposed: false,
       persisted: communityId === "design",
     };
@@ -416,7 +419,7 @@ export class EvidenceRuntime {
           communityId: scope.communityId,
           channelId: scope.channelId,
         }),
-        stores: this.mode === "nexus" ? 2 : 1,
+        stores: this.mode === "projectname" ? 2 : 1,
         subscribers: scope.disposed ? 0 : this.#listeners.size,
         persisted: scope.persisted,
         disposed: scope.disposed,
@@ -432,7 +435,7 @@ export const eventCount = scriptedEvents.length;
 export const publicSurface: Record<Mode, readonly string[]> = {
   ambient: ["messages", "presence", "setMessages", "setPresence", "clearAll"],
   native: ["getState", "subscribe", "sendMessage", "toggleBlock"],
-  nexus: [
+  projectname: [
     "messages: EntityReader",
     "presence: Reader",
     "sendMessage(command)",

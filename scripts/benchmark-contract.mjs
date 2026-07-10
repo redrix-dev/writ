@@ -12,7 +12,7 @@ const time = (operation) => {
   return performance.now() - started;
 };
 
-console.log("Nexus contract benchmark (milliseconds)");
+console.log("projectname contract benchmark (milliseconds)");
 console.log("size\t100 in-memory updates\t20 persisted updates");
 
 for (const size of sizes) {

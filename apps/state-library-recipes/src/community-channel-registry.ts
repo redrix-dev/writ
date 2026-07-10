@@ -1,4 +1,4 @@
-import { createEntityStore, type EntityReader } from "@redrixx/nexus";
+import { createEntityStore, type EntityReader } from "@redrixx/projectname";
 import type { Message, MessageTransport, RealtimeSource } from "./shared.js";
 
 export type ChannelSurface = Readonly<{

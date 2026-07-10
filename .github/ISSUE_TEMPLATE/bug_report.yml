@@ -10,7 +10,7 @@ body:
     id: version
     attributes:
       label: Package and version
-      placeholder: "@redrixx/nexus 0.1.0"
+      placeholder: "@redrixx/projectname 0.1.0"
     validations:
       required: true
   - type: dropdown

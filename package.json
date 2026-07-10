@@ -1,38 +1,38 @@
 {
-  "name": "nexus-workspace",
+  "name": "projectname-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "Monorepo for @redrixx/nexus — an authority and asserted-lifecycle layer for hot shared state.",
+  "description": "Monorepo for @redrixx/projectname — a shared ownership and lifecycle contract for hot state across state substrates.",
   "type": "module",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @redrixx/nexus --workspace @redrixx/nexus-react",
+    "build": "npm run build --workspace @redrixx/projectname --workspace @redrixx/projectname-react",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:exports": "npm run build && npm run check:exports --workspace @redrixx/nexus --workspace @redrixx/nexus-react",
+    "check:exports": "npm run build && npm run check:exports --workspace @redrixx/projectname --workspace @redrixx/projectname-react",
     "check:pack": "npm run build && node scripts/check-pack.mjs",
     "check:types:min": "npm run build && npx --yes --package typescript@5.0.4 tsc -p tests/typescript-min/tsconfig.json",
     "lint": "oxlint -D warnings -A unicorn/no-useless-spread .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "ci": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run check:exports && npm run test:compat --workspace @redrixx/nexus-react && npm run check:types:min && npm run check:pack && npm run demo:build",
-    "demo": "npm run dev --workspace @redrixx/nexus-demo",
-    "demo:build": "npm run build --workspace @redrixx/nexus-demo",
-    "benchmark:contract": "npm run build --workspace @redrixx/nexus && node scripts/benchmark-contract.mjs"
+    "ci": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run check:exports && npm run test:compat --workspace @redrixx/projectname-react && npm run check:types:min && npm run check:pack && npm run demo:build",
+    "demo": "npm run dev --workspace @redrixx/projectname-demo",
+    "demo:build": "npm run build --workspace @redrixx/projectname-demo",
+    "benchmark:contract": "npm run build --workspace @redrixx/projectname && node scripts/benchmark-contract.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/redrix-dev/nexus.git"
+    "url": "git+https://github.com/redrix-dev/projectname.git"
   },
   "author": "Cody Magnuson (redrixx)",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/redrix-dev/nexus#readme",
+  "homepage": "https://github.com/redrix-dev/projectname#readme",
   "bugs": {
-    "url": "https://github.com/redrix-dev/nexus/issues"
+    "url": "https://github.com/redrix-dev/projectname/issues"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

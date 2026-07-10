@@ -2,14 +2,14 @@
 
 ## Architectural boundary, not isolation
 
-Nexus separates writer and reader capabilities through TypeScript types and
-runtime object surfaces. This is an architectural API boundary. It is not a
+projectname separates writer and reader capabilities through TypeScript types
+and runtime object surfaces. This is an architectural API boundary. It is not a
 security sandbox and does not protect against malicious code, leaked writers,
 `as any`, unsafe casts, reflection, prototype manipulation, or mutation of
 mutable values returned by readers.
 
-Do not use Nexus as an authorization boundary. Enforce permissions and validate
-untrusted input at the appropriate server or trusted-process boundary.
+Do not use projectname as an authorization boundary. Enforce permissions and
+validate untrusted input at the appropriate server or trusted-process boundary.
 
 ## Reporting vulnerabilities
 

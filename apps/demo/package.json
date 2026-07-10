@@ -1,8 +1,8 @@
 {
-  "name": "@redrixx/nexus-demo",
+  "name": "@redrixx/projectname-demo",
   "version": "0.0.0",
   "private": true,
-  "description": "Before/after demo: a god hook vs Nexus for the same chat channel.",
+  "description": "Before/after demo: a god hook vs projectname for the same chat channel.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,8 +11,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@redrixx/nexus": "*",
-    "@redrixx/nexus-react": "*",
+    "@redrixx/projectname": "*",
+    "@redrixx/projectname-react": "*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Message, User } from "../types.js";
 
 /**
- * Pure presentational channel UI. Both the god-hook and the Nexus version
+ * Pure presentational channel UI. Both the god-hook and the projectname version
  * render THIS exact component — so the visible diff between them is entirely in
  * how state is owned and updated, never in the markup.
  */

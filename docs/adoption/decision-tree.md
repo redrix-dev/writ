@@ -1,4 +1,4 @@
-# Should this feature use Nexus?
+# Should this feature use projectname?
 
 ```text
 Is the state shared beyond one small component/feature?
@@ -11,10 +11,10 @@ Is the state shared beyond one small component/feature?
             ├─ No → A disciplined native store is probably enough.
             └─ Yes
                └─ Are instances dynamic or does disposal matter?
-                  ├─ Yes → Nexus is a strong candidate.
+                  ├─ Yes → projectname is a strong candidate.
                   └─ No
                      └─ Do invalid birth/death transitions reveal bugs?
-                        ├─ Yes → Nexus is a strong candidate.
+                        ├─ Yes → projectname is a strong candidate.
                         └─ No → Compare the authority benefit with the ceremony.
 ```
 
@@ -39,6 +39,6 @@ Is the state shared beyond one small component/feature?
 
 ## Adoption threshold
 
-Name the concrete return before adding Nexus: reduced mutation surface,
+Name the concrete return before adding projectname: reduced mutation surface,
 consistent ownership, asserted lifecycle, predictable scoping, easier review, or
 lower contributor entropy. If none applies, keep the native solution.
