@@ -10,9 +10,11 @@ export function ChannelView(props: {
   roster: User[];
   messages: Message[];
   typers: User[];
+  blockedIds: ReadonlySet<string>;
   onSend: (text: string) => void;
+  onToggleBlock: (userId: string) => void;
 }) {
-  const { roster, messages, typers, onSend } = props;
+  const { roster, messages, typers, blockedIds, onSend, onToggleBlock } = props;
   const [draft, setDraft] = useState("");
 
   const submit = () => {
@@ -34,6 +36,14 @@ export function ChannelView(props: {
               <span className="dot" style={{ background: u.color }} />
               <span className="name">{u.name}</span>
               {u.typing && <span className="typing-badge">typing…</span>}
+              <button
+                className="block-btn"
+                title={blockedIds.has(u.id) ? "Unblock" : "Block"}
+                aria-pressed={blockedIds.has(u.id)}
+                onClick={() => onToggleBlock(u.id)}
+              >
+                {blockedIds.has(u.id) ? "unblock" : "block"}
+              </button>
             </li>
           ))}
         </ul>

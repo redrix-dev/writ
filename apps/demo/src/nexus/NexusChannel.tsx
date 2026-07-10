@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useEntities } from "@redrixx/nexus-react";
+import { useEntities, useReader } from "@redrixx/nexus-react";
 import { ChannelView } from "../ui/ChannelView.js";
 import { createChannel, type Channel } from "./channel.js";
 import type { Server } from "../simulator.js";
@@ -22,6 +22,7 @@ export function NexusChannel({ server }: { server: Server }) {
 
   const presence = useEntities(channel.presence);
   const messages = useEntities(channel.messages);
+  const blocked = useReader(channel.blocked);
 
   const roster = useMemo(
     () => [...presence.values()].sort((a, b) => a.name.localeCompare(b.name)),
@@ -29,8 +30,11 @@ export function NexusChannel({ server }: { server: Server }) {
   );
   const typers = useMemo(() => roster.filter((u) => u.typing), [roster]);
   const messageList = useMemo(
-    () => [...messages.values()].sort((a, b) => a.at - b.at),
-    [messages],
+    () =>
+      [...messages.values()]
+        .filter((m) => !blocked.has(m.authorId))
+        .sort((a, b) => a.at - b.at),
+    [messages, blocked],
   );
 
   return (
@@ -38,7 +42,9 @@ export function NexusChannel({ server }: { server: Server }) {
       roster={roster}
       typers={typers}
       messages={messageList}
+      blockedIds={blocked}
       onSend={channel.send}
+      onToggleBlock={channel.toggleBlock}
     />
   );
 }

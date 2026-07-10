@@ -1,30 +1,43 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Message, User } from "../types.js";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import type { User } from "../types.js";
 import { LOCAL_USER, type Server } from "../simulator.js";
+import {
+  appendGodMessage,
+  getGodMessages,
+  subscribeGodMessageCache,
+} from "./messageCache.js";
+import { socialStore } from "./socialStore.js";
+
+const CHANNEL_ID = "general";
 
 /**
- * The god hook. Every concern in the channel — presence, typing, messages,
- * and all the derived views over them — lives in this one hook, wired through
- * one big effect. In Haven this was the 2000+ line shape; here it's small, but
- * the pathology is the same:
+ * The god hook. Distilled from a real ~2097-line `useMessages` hook, keeping the
+ * three pathologies that actually hurt:
  *
- *   1. NO OWNERSHIP BOUNDARY. The hook is the writer, but it also hands its raw
- *      setters to whoever calls it. Any component can `setPresence(...)` and
- *      corrupt the room. Authority is ambient — exactly what Nexus removes.
+ *   1. AMBIENT MODULE STATE. Messages live in `messageCache.ts` — a module-level
+ *      store any file can read or wipe (see the "Clear from outside" button).
+ *      No one owns message state.
  *
- *   2. ONE BLOB, ONE RE-RENDER. Presence, typing, and messages are separate
- *      useStates, but every consumer takes the whole hook, so a typing flicker
- *      re-renders the message list and vice versa. Nothing subscribes to just
- *      what it reads.
+ *   2. CROSS-STORE AUTHORITY. To decide which messages are visible, this hook
+ *      reaches into an unrelated `socialStore`. "Who decides visibility?" is
+ *      split across the message hook and a store that knows nothing about it.
  *
- *   3. LIFECYCLE IS BURIED. "A user joined" / "a user left" is birth and death,
- *      but here it's a `setPresence` spread in a switch — you can't see the
- *      lifecycle, so you can't reason about it.
+ *   3. NO BOUNDARY. Presence and typing are local useState, but the hook hands
+ *      its setters back to callers, so any component can mutate the room.
  */
 export function useChannel(server: Server) {
   const [presence, setPresence] = useState<Record<string, User>>({});
   const [typing, setTyping] = useState<Record<string, boolean>>({});
-  const [messages, setMessages] = useState<Message[]>([]);
+
+  // Messages come from the ambient module cache, not from here.
+  const messages = useSyncExternalStore(subscribeGodMessageCache, () =>
+    getGodMessages(CHANNEL_ID),
+  );
+  // Visibility authority: reach into an unrelated store.
+  const blockedIds = useSyncExternalStore(
+    socialStore.subscribe,
+    socialStore.getBlocked,
+  );
 
   useEffect(() => {
     const unsubscribe = server.subscribe((event) => {
@@ -33,7 +46,6 @@ export function useChannel(server: Server) {
           setPresence((p) => ({ ...p, [event.user.id]: event.user }));
           break;
         case "leave":
-          // birth/death, hidden inside object-spread bookkeeping
           setPresence((p) => {
             const { [event.userId]: _gone, ...rest } = p;
             return rest;
@@ -45,9 +57,6 @@ export function useChannel(server: Server) {
           break;
         case "typing":
           setTyping((t) => ({ ...t, [event.userId]: event.typing }));
-          // typing also has to be mirrored onto the presence blob, because the
-          // roster renders it — two sources of the same truth, kept in sync by
-          // hand. Miss one and they drift.
           setPresence((p) =>
             p[event.userId]
               ? { ...p, [event.userId]: { ...p[event.userId]!, typing: event.typing } }
@@ -55,7 +64,7 @@ export function useChannel(server: Server) {
           );
           break;
         case "message":
-          setMessages((m) => [...m, event.message].slice(-50));
+          appendGodMessage(CHANNEL_ID, event.message); // into the module global
           break;
       }
     });
@@ -66,21 +75,28 @@ export function useChannel(server: Server) {
     };
   }, [server]);
 
-  // Derived views, recomputed here because there's nowhere else to put them.
   const roster = useMemo(
     () => Object.values(presence).sort((a, b) => a.name.localeCompare(b.name)),
     [presence],
   );
-  const typers = useMemo(
-    () => roster.filter((u) => typing[u.id]),
-    [roster, typing],
+  const typers = useMemo(() => roster.filter((u) => typing[u.id]), [roster, typing]);
+  // The filter reaches into socialStore — visibility lives in two places.
+  const visibleMessages = useMemo(
+    () => messages.filter((m) => !blockedIds.has(m.authorId)),
+    [messages, blockedIds],
   );
 
-  const send = (text: string) => server.send(text);
-
-  // The footgun, returned in the open: every setter is exposed. Nothing stops a
-  // component from reaching in and mutating presence or messages directly.
-  return { roster, typers, messages, send, setPresence, setMessages, setTyping };
+  return {
+    roster,
+    typers,
+    messages: visibleMessages,
+    blockedIds,
+    send: (text: string) => server.send(text),
+    toggleBlock: (userId: string) => socialStore.toggle(userId),
+    // Footgun, returned in the open: any caller can mutate the room.
+    setPresence,
+    setTyping,
+  };
 }
 
 export { LOCAL_USER };

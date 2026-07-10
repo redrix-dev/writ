@@ -100,6 +100,24 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
 - ESM-only is deliberate for v0.1 (documented). CJS consumers use dynamic import. Revisit
   dual-CJS only if a real consumer needs `require()`.
 
+## Demo sharpened against the real god hook (2026-07-10)
+Cody supplied the real pre-Nexus `useMessages` (commit 040a21d): **~2097 lines**, a
+23-dep effect, 4 realtime subs, module-level `crossSessionMessageBundleByChannel`
+caches mutated via exports, ~77 reach-ins to `useSocialStore`/`usePermissionsStore`/
+`useUserStatusStore`, and a `{ state, derived, actions }` return (the controller-hook
+shape Haven's own docs later ban). Key reframe: **it already had zustand** → the pitch is
+"storage ≠ authority," and this file is the exhibit. The demo's god hook was a fair-shape
+but under-sold strawman; sharpened to faithfully include the two worst smells:
+- `godhook/messageCache.ts`: ambient module-level message store, mutated via exports.
+  Demo's "Clear from outside the hook" button calls it directly → messages 1→0 (verified).
+- `godhook/socialStore.ts`: separate store the hook reaches into for visibility (block).
+  Nexus side owns `blocked` in the SAME composition root, toggled via the one writer.
+- README + notes panel cite the real 2097-line hook. Verified in-browser: clear-from-
+  outside wipes messages, block hides that author, Nexus "owned" button disabled, no
+  console errors. Skeptical-read caveat logged: Nexus wouldn't shrink the 2097 lines by
+  magic — it makes reader-mutation, module-globals, and silent cross-store reach-ins
+  structurally impossible/loud, and forces ownership into one place.
+
 ## Deferred (perf/ergonomics, not v0.1 blockers)
 - Copy-on-write is O(n)/write. Fine for lifecycle-owner entity counts; add batched/
   structural-sharing path only if a real workload needs it.

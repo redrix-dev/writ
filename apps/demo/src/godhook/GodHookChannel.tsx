@@ -3,19 +3,21 @@ import { useChannel } from "./useChannel.js";
 import type { Server } from "../simulator.js";
 
 /**
- * The god-hook channel. One `useChannel` call returns the entire world, and
- * this component re-renders on every event in the room — a typing flicker three
- * users away re-renders the whole message list — because it subscribes to the
- * whole blob, not to what it reads.
+ * The god-hook channel. One `useChannel` call returns the whole world — and its
+ * message state actually lives in a module global, its visibility rule in a
+ * separate store. This component re-renders on every event in the room.
  */
 export function GodHookChannel({ server }: { server: Server }) {
-  const { roster, typers, messages, send } = useChannel(server);
+  const { roster, typers, messages, blockedIds, send, toggleBlock } =
+    useChannel(server);
   return (
     <ChannelView
       roster={roster}
       typers={typers}
       messages={messages}
+      blockedIds={blockedIds}
       onSend={send}
+      onToggleBlock={toggleBlock}
     />
   );
 }

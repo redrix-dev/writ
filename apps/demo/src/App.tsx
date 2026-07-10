@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { GodHookChannel } from "./godhook/GodHookChannel.js";
 import { NexusChannel } from "./nexus/NexusChannel.js";
+import { clearGodMessageCache } from "./godhook/messageCache.js";
 import { createServer } from "./simulator.js";
 
 type Mode = "god" | "nexus";
@@ -9,19 +10,19 @@ const NOTES: Record<Mode, { title: string; points: string[] }> = {
   god: {
     title: "God hook",
     points: [
-      "One useChannel owns presence, typing, and messages together.",
-      "It hands its raw setters back to callers — any component can mutate the room. Authority is ambient.",
-      "Every consumer takes the whole blob, so a typing flicker re-renders the message list.",
-      "Join/leave are birth and death, buried in object-spread bookkeeping.",
+      "Messages live in a module-level cache any file can read or wipe — try the button below. No one owns message state.",
+      "Visibility (blocked users) is decided by reaching into a separate store, so “who can hide a message?” is split across two places.",
+      "Presence + typing are local state, but the hook hands its setters back — any component can mutate the room.",
+      "Distilled from a real ~2097-line useMessages hook with the same three smells at 17× the size.",
     ],
   },
   nexus: {
     title: "Nexus",
     points: [
-      "presence and messages are separate entity stores, wired in one composition root.",
-      "The server handler is the only writer. Components get readers — no setter exists to misuse.",
+      "presence, messages, and the blocked set are all owned by one composition root. The server handler is the only writer.",
+      "Visibility policy is co-located with messages and toggled through the root's writer — not a reach-in to an unrelated store.",
+      "Components get readers with no write path, so nothing outside the root can mutate message state.",
       "Lifecycle is in the verbs: join → upsert (birth), leave → destroyIfPresent (death), message → spawn.",
-      "Independent authorities: a roster-only component never re-renders on a new message.",
     ],
   },
 };
@@ -76,6 +77,26 @@ export function App() {
               <li key={p}>{p}</li>
             ))}
           </ul>
+
+          <div className="authority-demo">
+            {mode === "god" ? (
+              <button
+                className="danger"
+                onClick={() => clearGodMessageCache("general")}
+              >
+                ☠ Clear messages from outside the hook
+              </button>
+            ) : (
+              <button className="owned" disabled title="No external write path">
+                🔒 Owned — no outside write path
+              </button>
+            )}
+            <p className="authority-caption">
+              {mode === "god"
+                ? "A component, not the hook, wiping message state — because it can."
+                : "There is no exported setter and no module global to reach. Only the root writes."}
+            </p>
+          </div>
         </aside>
       </main>
     </div>

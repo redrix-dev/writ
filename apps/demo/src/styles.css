@@ -128,6 +128,23 @@ main {
   gap: 8px;
 }
 
+.block-btn {
+  margin-left: auto;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.block-btn[aria-pressed="true"] {
+  border-color: #ff8fab;
+  color: #ff8fab;
+}
+
 .dot {
   width: 9px;
   height: 9px;
@@ -229,5 +246,38 @@ main {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: var(--muted);
+}
+
+.authority-demo {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.authority-demo button {
+  width: 100%;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line);
+}
+
+.authority-demo .danger {
+  background: transparent;
+  color: #ff8fab;
+  border-color: #ff8fab;
+}
+
+.authority-demo .owned {
+  background: transparent;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.authority-caption {
+  margin: 8px 0 0;
+  font-size: 12px;
   color: var(--muted);
 }

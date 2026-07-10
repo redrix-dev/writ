@@ -1,4 +1,4 @@
-import { createEntityStore } from "@redrixx/nexus";
+import { createCell, createEntityStore } from "@redrixx/nexus";
 import type { Message, User } from "../types.js";
 import type { Server } from "../simulator.js";
 
@@ -19,6 +19,9 @@ import type { Server } from "../simulator.js";
 export function createChannel(server: Server) {
   const presence = createEntityStore<User>();
   const messages = createEntityStore<Message>();
+  // Visibility policy is OWNED by the same root as messages — co-located, not a
+  // reach-in to some unrelated store. Toggling goes through the one writer below.
+  const blocked = createCell<ReadonlySet<string>>(new Set());
 
   const unsubscribe = server.subscribe((event) => {
     switch (event.type) {
@@ -46,7 +49,14 @@ export function createChannel(server: Server) {
   return {
     presence: presence.reader,
     messages: messages.reader,
+    blocked: blocked.reader,
     send: (text: string) => server.send(text),
+    toggleBlock: (userId: string) => {
+      const next = new Set(blocked.reader.get());
+      if (next.has(userId)) next.delete(userId);
+      else next.add(userId);
+      blocked.set(next);
+    },
     dispose: () => {
       unsubscribe();
       stop();
