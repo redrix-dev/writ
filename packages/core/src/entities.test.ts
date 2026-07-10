@@ -29,7 +29,10 @@ describe("createEntityStore — strict lifecycle (default)", () => {
     store.spawn("u1", { name: "Cody" });
     const merged = store.update("u1", { status: "online" });
     expect(merged).toEqual({ name: "Cody", status: "online" });
-    expect(store.reader.getEntity("u1")).toEqual({ name: "Cody", status: "online" });
+    expect(store.reader.getEntity("u1")).toEqual({
+      name: "Cody",
+      status: "online",
+    });
   });
 
   it("update throws if the id is absent, and names the escape hatch", () => {
@@ -94,6 +97,12 @@ describe("createEntityStore — reactivity & authority", () => {
     expect(asRecord.update).toBeUndefined();
     expect(asRecord.destroy).toBeUndefined();
     expect(asRecord.upsert).toBeUndefined();
+    expect(asRecord.destroyIfPresent).toBeUndefined();
+    expect(asRecord.clear).toBeUndefined();
+    expect(asRecord.persist).toBeUndefined();
+    expect(asRecord.rehydrate).toBeUndefined();
+    expect(asRecord.set).toBeUndefined();
+    expect(asRecord.setState).toBeUndefined();
     expect(Object.keys(reader).sort()).toEqual([
       "get",
       "getEntity",
@@ -107,6 +116,34 @@ describe("createEntityStore — reactivity & authority", () => {
     store.spawn("u1", { name: "a" });
     store.spawn("u2", { name: "b" });
     store.clear();
+    expect(store.reader.get().size).toBe(0);
+  });
+
+  it("clear is one administrative reset notification, not per-entity death", () => {
+    const store = createEntityStore<User>();
+    store.spawn("u1", { name: "a" });
+    store.spawn("u2", { name: "b" });
+    const listener = vi.fn();
+    store.reader.subscribe(listener);
+    store.clear();
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not deep-freeze entity references returned by readers", () => {
+    const store = createEntityStore<User>();
+    const mutable = { name: "before" };
+    store.spawn("u1", mutable);
+    mutable.name = "after";
+    expect(store.reader.getEntity("u1")?.name).toBe("after");
+  });
+
+  it("failed strict operations do not commit or notify", () => {
+    const store = createEntityStore<User>();
+    const listener = vi.fn();
+    store.reader.subscribe(listener);
+    expect(() => store.update("missing", { name: "x" })).toThrow();
+    expect(() => store.destroy("missing")).toThrow();
+    expect(listener).not.toHaveBeenCalled();
     expect(store.reader.get().size).toBe(0);
   });
 });
@@ -126,7 +163,10 @@ describe("createEntityStore — persistence", () => {
     const b = createEntityStore<User>({ persistence, key: "users" });
     expect(b.reader.has("u1")).toBe(false); // not loaded yet
     b.rehydrate();
-    expect(b.reader.getEntity("u1")).toEqual({ name: "Cody", status: "online" });
+    expect(b.reader.getEntity("u1")).toEqual({
+      name: "Cody",
+      status: "online",
+    });
   });
 
   it("clear wipes persisted state too", () => {
@@ -159,5 +199,57 @@ describe("createEntityStore — persistence", () => {
       store.persist();
       store.rehydrate();
     }).not.toThrow();
+  });
+
+  it("commits in memory and warns when persistence fails", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const persistence = {
+      getString: () => null,
+      set: () => {
+        throw new Error("disk full");
+      },
+      remove: () => {},
+    };
+    const store = createEntityStore<User>({ persistence, key: "users" });
+    expect(() => store.spawn("u1", { name: "Cody" })).not.toThrow();
+    expect(store.reader.has("u1")).toBe(true);
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
+  });
+
+  it("keeps current memory state but removes corrupt persisted input", () => {
+    const persistence = createMemoryPersistence();
+    const store = createEntityStore<User>({ persistence, key: "users" });
+    store.spawn("live", { name: "Current" });
+    persistence.set("users", "not-json");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    store.rehydrate();
+    expect(store.reader.getEntity("live")).toEqual({ name: "Current" });
+    expect(persistence.getString("users")).toBeNull();
+    warn.mockRestore();
+  });
+});
+
+describe("createEntityStore — realistic churn", () => {
+  it("survives repeated entity and subscription churn deterministically", () => {
+    const store = createEntityStore<User>();
+    let notifications = 0;
+    const unsubscribers = Array.from({ length: 50 }, () =>
+      store.reader.subscribe(() => {
+        notifications += 1;
+      }),
+    );
+
+    for (let index = 0; index < 1_000; index++) {
+      const id = `u${index}`;
+      store.spawn(id, { name: id });
+      store.update(id, { status: "online" });
+      store.destroy(id);
+    }
+
+    for (const unsubscribe of unsubscribers) unsubscribe();
+    store.spawn("after-cleanup", { name: "quiet" });
+    expect(notifications).toBe(1_000 * 3 * 50);
+    expect(store.reader.get().size).toBe(1);
   });
 });

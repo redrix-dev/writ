@@ -1,0 +1,15 @@
+{
+  "name": "@redrixx/nexus-state-library-recipes",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "@redrixx/nexus": "*",
+    "solid-js": "^1.9.7",
+    "zustand": "^5.0.6"
+  }
+}

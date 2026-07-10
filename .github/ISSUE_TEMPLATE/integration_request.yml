@@ -1,0 +1,32 @@
+name: Integration request
+description: Propose a framework, store substrate, or host integration.
+title: "[Integration]: "
+labels: [integration]
+body:
+  - type: input
+    id: ecosystem
+    attributes:
+      label: Ecosystem and versions
+    validations:
+      required: true
+  - type: textarea
+    id: workload
+    attributes:
+      label: Real workload
+      description:
+        Describe event sources, observers, dynamic scopes, and disposal.
+    validations:
+      required: true
+  - type: textarea
+    id: native
+    attributes:
+      label: What the native ecosystem already provides
+    validations:
+      required: true
+  - type: textarea
+    id: reusable
+    attributes:
+      label: Reusable behavior beyond a recipe
+      description: Explain why an official adapter is warranted.
+    validations:
+      required: true

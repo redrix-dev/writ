@@ -88,5 +88,19 @@ describe("createCell", () => {
       // Everyone else holds `cell.reader` and cannot — enforced by the type
       // system at compile time and by the absence of the method at runtime.
     });
+
+    it("sharing the Writer deliberately shares authority", () => {
+      const owner = createCell(0);
+      const secondHolder = owner;
+      secondHolder.set(2);
+      expect(owner.reader.get()).toBe(2);
+    });
+
+    it("does not deep-freeze mutable values returned by readers", () => {
+      const owner = createCell({ nested: { count: 0 } });
+      const exposed = owner.reader.get();
+      exposed.nested.count = 1;
+      expect(owner.reader.get().nested.count).toBe(1);
+    });
   });
 });

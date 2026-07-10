@@ -1,0 +1,33 @@
+name: Bug report
+description: Report reproducible incorrect behavior in a maintained package.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets or private user data.
+  - type: input
+    id: version
+    attributes:
+      label: Package and version
+      placeholder: "@redrixx/nexus 0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      options: [Browser, Node.js, React Native, Tauri, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include lifecycle order, expected result, and actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

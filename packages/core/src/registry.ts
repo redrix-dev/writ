@@ -1,9 +1,10 @@
 /**
  * Composition-root registry — one named slot for one wired instance.
  *
- * A composition root is built once, at startup, in one place. The registry lets
- * the rest of the app reach that instance without prop-drilling it or importing
- * the construction site directly (no ambient imports of the live object).
+ * A registry is one strict named slot commonly wired at a composition root. It
+ * lets the rest of the app reach an intentionally published reader-and-command
+ * surface without prop-drilling. Applications may define multiple registries
+ * and composition roots; callers decide what capabilities the value exposes.
  *
  * Registration is **strict by default**, for the same reason the entity
  * lifecycle is: a *second* `register` almost always means a bug — a stray second
@@ -34,6 +35,15 @@ export interface Registry<T> {
   reset(): void;
 }
 
+/**
+ * Create an independent strict named registry slot.
+ *
+ * @typeParam T - The intentionally published reader-and-command surface.
+ * @param name - Human-readable name included in registration errors.
+ * @returns A new registry that shares no state with other registries.
+ * @throws When `register` is called while the slot is occupied, or `require` is
+ * called while it is empty.
+ */
 export function createRegistry<T>(name: string): Registry<T> {
   // Boxed so that registering a falsy/nullish instance is still "registered".
   let slot: { value: T } | null = null;

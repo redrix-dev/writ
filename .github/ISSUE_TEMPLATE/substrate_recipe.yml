@@ -1,0 +1,29 @@
+name: Substrate recipe
+description: Share evidence for a store living inside the Nexus ownership shape.
+title: "[Recipe]: "
+labels: [recipe]
+body:
+  - type: input
+    id: substrate
+    attributes:
+      label: Store or reactive substrate
+    validations:
+      required: true
+  - type: textarea
+    id: native
+    attributes:
+      label: Fair native implementation
+    validations:
+      required: true
+  - type: textarea
+    id: ownership
+    attributes:
+      label: Ownership, public surface, dynamic scope, and disposal
+    validations:
+      required: true
+  - type: textarea
+    id: ceremony
+    attributes:
+      label: Added ceremony and concrete return
+    validations:
+      required: true

@@ -1,7 +1,7 @@
 {
   "name": "@redrixx/nexus",
   "version": "0.1.0",
-  "description": "Authority-oriented entity-lifecycle state runtime. State libraries manage storage; Nexus manages authority — one writer, many readers, enforced structurally.",
+  "description": "Authority and asserted-lifecycle layer for hot shared state, with separate writer and reader capabilities.",
   "type": "module",
   "exports": {
     ".": {
@@ -10,11 +10,11 @@
     }
   },
   "types": "./dist/index.d.ts",
-  "files": ["dist", "NOTICE"],
+  "files": [
+    "dist",
+    "NOTICE"
+  ],
   "sideEffects": false,
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",

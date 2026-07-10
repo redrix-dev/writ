@@ -1,0 +1,39 @@
+.comparison-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.comparison-row article {
+  padding: 14px;
+  background: #0c1722;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.comparison-row span,
+.comparison-row strong,
+.comparison-row small {
+  display: block;
+}
+
+.comparison-row span {
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.comparison-row strong {
+  margin: 5px 0;
+}
+
+.comparison-row small {
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .comparison-row {
+    grid-template-columns: 1fr;
+  }
+}

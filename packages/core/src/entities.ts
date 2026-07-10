@@ -1,5 +1,5 @@
 /**
- * Entity store — a one-writer collection of entities with an explicit lifecycle.
+ * Entity store with separate writer/reader capabilities and asserted existence.
  *
  * `createEntityStore` returns an {@link EntityStore}: the caller is the owner and
  * holds the lifecycle methods; `.reader` is the read-only handle for everyone
@@ -28,7 +28,7 @@ import { createCell, type Reader } from "./store.js";
 import type { Persistence } from "./persistence.js";
 import { warn } from "./warn.js";
 
-/** Read-only handle over an entity collection. Hand this out; it cannot mutate. */
+/** Entity handle with no Nexus mutation method; values are not deep-frozen. */
 export interface EntityReader<T> extends Reader<ReadonlyMap<string, T>> {
   /** The entity for `id`, or `undefined` if none is alive. */
   getEntity(id: string): T | undefined;
@@ -56,7 +56,10 @@ export interface EntityStore<T extends object> {
   destroyIfPresent(id: string): boolean;
 
   // ── bulk / persistence ──────────────────────────────────────────
-  /** Remove every entity and wipe persisted state (if configured). */
+  /**
+   * Administrative reset: remove all entities in one commit and wipe persisted
+   * state. This is not a sequence of asserted per-entity destroy transitions.
+   */
   clear(): void;
   /** Persist the current collection. No-op if no persistence is configured. */
   persist(): void;
@@ -64,6 +67,7 @@ export interface EntityStore<T extends object> {
   rehydrate(): void;
 }
 
+/** Construction and synchronous persistence options for an entity store. */
 export interface EntityStoreOptions<T> {
   /** Optional durability port. When set, writes persist through automatically. */
   persistence?: Persistence;
@@ -75,6 +79,14 @@ export interface EntityStoreOptions<T> {
   deserialize?: (raw: string) => Iterable<readonly [string, T]>;
 }
 
+/**
+ * Create an entity writer and its separate observation-only reader.
+ *
+ * @typeParam T - Entity value type. Prefer readonly public entity types.
+ * @param options - Optional synchronous persistence and serialization behavior.
+ * @returns The owner capability containing strict and lenient lifecycle methods.
+ * @throws During construction when persistence is supplied without a key.
+ */
 export function createEntityStore<T extends object>(
   options: EntityStoreOptions<T> = {},
 ): EntityStore<T> {

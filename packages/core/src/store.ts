@@ -1,18 +1,17 @@
 /**
  * The reactive substrate — and the authority boundary.
  *
- * A "cell" is a single piece of state with exactly one writer. `createCell`
- * returns a {@link Writer}: whoever calls it is the owner and holds the only
- * `set`. The `reader` property is the read-only handle you hand to everyone
- * else — it has `get` and `subscribe` and *no way to write*. That is the whole
- * one-writer model, made structural: readers cannot mutate because there is no
- * mutation method on the object they hold, not because a lint rule says so.
+ * `createCell` creates one {@link Writer} capability and a separate reader.
+ * The `reader` property has `get` and `subscribe`, but no Nexus mutation method.
+ * Code holding only that handle cannot write through it. The writer can still
+ * be deliberately shared, and mutable values returned by `get` are not deeply
+ * frozen; prefer readonly state types and immutable updates at public boundaries.
  *
  * The reader shape (`get` + no-arg `subscribe`) is deliberately the exact pair
  * React's `useSyncExternalStore` wants, so the React adapter is a one-liner.
  */
 
-/** The read-only handle. Hand this out freely; it cannot mutate state. */
+/** A handle with no Nexus mutation method. Returned values are not deep-frozen. */
 export interface Reader<S> {
   /** Current value. Cheap; call it inside a selector/snapshot. */
   get(): S;

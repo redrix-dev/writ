@@ -1,9 +1,8 @@
 /**
  * @redrixx/nexus — an authority-oriented entity-lifecycle state runtime.
  *
- * State libraries manage storage. Nexus manages authority: every piece of
- * state has exactly one writer, and that is enforced structurally, not by
- * convention.
+ * Nexus creates separate writer and reader capabilities. Code holding only a
+ * reader has no Nexus mutation method; sharing a writer shares its authority.
  */
 
 export { createCell, type Reader, type Writer } from "./store.js";
@@ -14,7 +13,4 @@ export {
   type EntityStoreOptions,
 } from "./entities.js";
 export { createRegistry, type Registry } from "./registry.js";
-export {
-  createMemoryPersistence,
-  type Persistence,
-} from "./persistence.js";
+export { createMemoryPersistence, type Persistence } from "./persistence.js";

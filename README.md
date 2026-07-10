@@ -1,34 +1,128 @@
 # Nexus
 
-**State libraries manage storage. Nexus manages authority.**
+**Make authority a capability, not a convention.**
 
-Redux, Zustand, and Jotai answer one question: _"where does state live, and how
-do components subscribe to it?"_ They are storage plus subscription. Nexus
-answers a different one: _"who is allowed to change this state?"_
+Highly subscribed state becomes difficult when realtime events, optimistic
+actions, persistence, policy, and UI code can all affect the same entities.
+Nexus gives that state an explicit owner, separates writer and reader
+capabilities, and makes entity existence changes deliberate.
 
-```
-State libraries          Nexus
-─────────────────        ─────────────────
-where state lives        who owns state
-how you subscribe        who may mutate
-                         when entities are born and die
-```
+Nexus is a small authority and lifecycle layer for hot shared application state:
+high-churn state with many observers, recurring external events, dynamic entity
+collections, and deliberately restricted mutation authority.
 
-- **One writer, many readers.** Every piece of state has exactly one owner
-  allowed to mutate it — and that's enforced _structurally_, not by convention.
-  Creating state hands back a **writer** (the owner keeps it) whose `reader` —
-  the handle everyone else gets — has no method to write. You can't reach around
-  the owner because there's nothing to reach.
-- **Explicit entity lifecycle.** Entities have a real birth and death:
-  `spawn` and `destroy`, strict by default, so "a thing appeared" and "a thing
-  went away" are asserted transitions rather than incidental map edits.
-- **One composition root.** Ownership is wired in exactly one place. No ambient
-  imports of live state, no module-level singletons scattered across the app.
+Representative workloads include realtime messaging, presence, permissions,
+roles, multiplayer state, collaborative editors, device telemetry, voice
+sessions, long-lived desktop clients, and offline or reconnected systems.
 
-Zero dependencies. Framework-agnostic. Plain TypeScript, small enough to read in
-one sitting.
+State libraries provide storage, reactivity, selectors, update propagation, and
+mature tooling. Nexus complements them by organizing who owns those stores, who
+receives write authority, when scoped stores exist, and how entity birth and
+death are expressed. In shorthand: **State libraries manage storage; Nexus
+manages authority.**
 
-> Tagline: _State libraries manage storage. Nexus manages authority._
+- **Separate capabilities.** Nexus creates one writer capability and a separate
+  reader capability. Consumers holding only the reader cannot write through that
+  handle because readers expose no Nexus mutation method.
+- **Asserted entity existence.** `spawn` and `destroy` are strict by default, so
+  duplicate creation and missing destruction are reported instead of becoming
+  incidental map edits. This is an existence lifecycle, not a model of every
+  valid domain transition.
+- **Strict service registry.** `createRegistry` publishes an intentionally wired
+  reader-and-command surface without exposing raw writers. Each registry is one
+  strict named slot; an application may deliberately have multiple composition
+  roots or registries.
+
+The `@redrixx/nexus` core has zero runtime dependencies and is
+framework-agnostic. Official UI support currently consists of the React adapter
+that ships in this repository; adapters and examples may have dependencies.
+
+## When Nexus earns its keep
+
+Nexus is most useful when:
+
+- Several independent event sources converge on the same state.
+- State instances are created dynamically by tenant, community, channel,
+  document, session, or device.
+- Many components observe state but should not receive its mutation capability.
+- Duplicate creation, missing updates, and repeated destruction indicate bugs.
+- Contributors routinely need to determine who is allowed to change something.
+- Store lifetime and subscription cleanup matter.
+
+Realtime messaging, collaborative editing, multiplayer sessions, device
+telemetry, and long-lived offline/reconnected clients often have several of
+these properties at once.
+
+## When Nexus is unnecessary
+
+Prefer the simpler native solution for:
+
+- Local component state.
+- Simple forms.
+- Static configuration.
+- Straightforward request/response pages.
+- State already cleanly owned by one small feature.
+- Server state better handled by a query or cache library.
+
+## What Nexus is not
+
+Nexus is not:
+
+- A replacement for Zustand, Redux, Jotai, Solid stores, or RxJS.
+- A server-state cache or data-fetching library.
+- A forms or local-component-state solution.
+- A complete state-machine runtime.
+- A security boundary.
+- Intended for every piece of application state.
+
+## Authority means…
+
+- **Owner:** the domain object or module responsible for a store's policy and
+  lifetime. It normally retains the writer capability.
+- **Writer capability:** the object with Nexus mutation methods such as `set`,
+  `spawn`, `update`, and `destroy`. Anyone holding it can use that authority.
+- **Reader:** a separate object with observation methods such as `get` and
+  `subscribe`, but no Nexus mutation method.
+- **Command:** a narrow domain operation such as `sendMessage` or `blockUser`
+  that an owner deliberately publishes instead of its raw writer.
+- **Composition root:** a place where owners are constructed, external events
+  are routed, and the public reader-and-command surface is assembled. An
+  application may have multiple composition roots.
+
+Ambient access is compatible with this model when it exposes the intentional
+reader-and-command surface rather than raw writer capabilities.
+
+## Authority does not mean…
+
+Nexus makes disciplined ownership easy and visible; it does not identify one
+human or module as the owner at runtime. A writer can still be deliberately
+exported, leaked, or passed to multiple callers, and every holder then shares
+its authority. This is a capability and API boundary, not protection against
+malicious code, `as any`, unsafe casts, reflection, or direct mutation of
+values.
+
+Nexus also does not provide deep runtime immutability. If `get()` returns a
+mutable object, array, collection, or nested reference, a consumer can mutate
+that value without a Nexus mutation method. Prefer immutable updates and expose
+readonly state types at public reader boundaries.
+
+Nexus does not write domain policy, guarantee correct commands, or model every
+valid domain transition. It makes authority and asserted entity existence
+visible; it does not make an application automatically correct.
+
+## Three separable pieces
+
+Nexus-shaped state has three independent layers:
+
+1. **Reactive substrate:** the built-in cell, Zustand, Redux, Solid, or another
+   store supplies storage, subscriptions, selectors, and update propagation.
+2. **Ownership topology:** a domain owner retains the write capability and
+   controls when scoped store instances are created and disposed.
+3. **Public surface:** consumers receive readers and narrow domain commands,
+   rather than unrestricted store mutation.
+
+The built-in cell is a small zero-dependency default, not a requirement to
+abandon an existing state library.
 
 ## Install
 
@@ -38,26 +132,32 @@ npm install @redrixx/nexus
 npm install @redrixx/nexus-react
 ```
 
+Both packages are **ESM-only**. CommonJS consumers must use dynamic `import()`.
+The browser-compatible core has no Node-specific runtime requirement and no
+runtime dependencies.
+
 ## The 60-second tour
 
-### A one-writer cell
+### A writer-and-reader cell
 
-The smallest unit: state with exactly one writer.
+The smallest unit creates one writer capability and its reader.
 
 ```ts
 import { createCell } from "@redrixx/nexus";
 
 const count = createCell(0);
 
-count.set((n) => n + 1);   // the owner holds `count` and can write
-export const counter = count.reader;   // everyone else gets this
+count.set((n) => n + 1); // the owner holds `count` and can write
+export const counter = count.reader; // everyone else gets this
 
-counter.get();                          // 1
-counter.subscribe(() => { /* re-read */ });
-// counter.set  ← does not exist. There is no write path on a reader.
+counter.get(); // 1
+counter.subscribe(() => {
+  /* re-read */
+});
+// counter.set  ← does not exist. Readers expose no Nexus mutation method.
 ```
 
-### An entity collection with a lifecycle
+### An entity collection with asserted existence
 
 ```ts
 import { createEntityStore } from "@redrixx/nexus";
@@ -65,8 +165,8 @@ import { createEntityStore } from "@redrixx/nexus";
 const users = createEntityStore<{ name: string; online: boolean }>();
 
 users.spawn("u1", { name: "Cody", online: true }); // birth — throws if already alive
-users.update("u1", { online: false });             // patch — throws if absent
-users.destroy("u1");                                // death — throws if absent
+users.update("u1", { online: false }); // patch — throws if absent
+users.destroy("u1"); // death — throws if absent
 ```
 
 Strict is the default, because a lifecycle you can't rely on isn't a lifecycle.
@@ -74,7 +174,7 @@ Leniency exists, but only as **named, explicit** opt-ins — never a silent flag
 
 ```ts
 users.upsert("u1", { name: "Cody", online: true }); // spawn-or-replace, never throws
-users.destroyIfPresent("u1");                        // no-throw death → boolean
+users.destroyIfPresent("u1"); // no-throw death → boolean
 ```
 
 And when strict throws, the error names its own escape hatch:
@@ -85,9 +185,10 @@ spawn("u1"): entity is already alive. Use upsert() to replace it.
 
 ### Ownership wired in one place
 
-The composition root is the single file where owners are constructed and their
-readers handed out. `createRegistry` lets the rest of the app reach the wired
-instance without prop-drilling or importing the live object.
+A composition root is a place where owners are constructed and their public
+readers and commands are handed out. `createRegistry` lets the rest of the app
+reach one intentionally wired surface without prop-drilling. An application can
+have more than one composition root or registry.
 
 ```ts
 // composition-root.ts
@@ -99,7 +200,7 @@ export function bootstrap(events: EventSource) {
   const users = createEntityStore<User>();
   const rooms = createEntityStore<Room>();
 
-  // one writer: only this wiring mutates the stores
+  // this owner retains these writer capabilities
   events.on("join", (u) => users.upsert(u.id, u));
   events.on("leave", (u) => users.destroyIfPresent(u.id));
 
@@ -108,27 +209,111 @@ export function bootstrap(events: EventSource) {
 ```
 
 ```ts
-// anywhere else — read-only, cannot mutate
+// anywhere else — no Nexus mutation method is exposed
 import { app } from "./composition-root.js";
 const { users } = app.require();
 ```
 
+## Scoped architecture: one store per channel
+
+Dynamic scopes are where the ownership topology becomes especially useful. In
+this example, a community owner lazily creates a channel owner on first access.
+Each channel owner retains its writable message store, exposes a reader and a
+narrow `sendMessage` command, routes realtime callbacks through itself, and is
+explicitly disposed when the channel leaves scope.
+
+```ts
+import { createEntityStore, type EntityReader } from "@redrixx/nexus";
+
+type Message = Readonly<{
+  id: string;
+  channelId: string;
+  body: string;
+  pending: boolean;
+}>;
+
+type ChannelPublic = Readonly<{
+  messages: EntityReader<Message>;
+  sendMessage(body: string): void;
+}>;
+
+class ChannelOwner {
+  readonly #messages = createEntityStore<Message>();
+  readonly #unsubscribe: () => void;
+
+  readonly public: ChannelPublic = {
+    messages: this.#messages.reader,
+    sendMessage: (body) => this.#sendMessage(body),
+  };
+
+  constructor(
+    readonly id: string,
+    realtime: RealtimeClient,
+  ) {
+    this.#unsubscribe = realtime.onMessage(id, (message) => {
+      this.#messages.spawn(message.id, message);
+    });
+  }
+
+  #sendMessage(body: string) {
+    const id = crypto.randomUUID();
+    this.#messages.spawn(id, { id, channelId: this.id, body, pending: true });
+    // Route transport success/failure back through this owner as domain policy.
+  }
+
+  dispose() {
+    this.#unsubscribe();
+    this.#messages.clear();
+  }
+}
+
+class CommunityOwner {
+  readonly #channels = new Map<string, ChannelOwner>();
+
+  constructor(
+    readonly id: string,
+    readonly realtime: RealtimeClient,
+  ) {}
+
+  channel(id: string): ChannelPublic {
+    let owner = this.#channels.get(id);
+    if (!owner) {
+      owner = new ChannelOwner(id, this.realtime); // lazy scoped store creation
+      this.#channels.set(id, owner);
+    }
+    return owner.public;
+  }
+
+  closeChannel(id: string) {
+    const owner = this.#channels.get(id);
+    if (!owner) return;
+    owner.dispose();
+    this.#channels.delete(id);
+  }
+}
+```
+
+The reactive substrate inside `ChannelOwner` could instead be a vanilla Zustand
+store, Redux store, Solid store, or hand-rolled external store. The Nexus-shaped
+decision is who retains its mutation capability, what consumers receive, and
+when that scoped instance is disposed.
+
 ## React
 
-`@redrixx/nexus-react` is a thin binding: components subscribe as _readers_.
-There is no write path in a hook — mutation lives on the owner, at your
-composition root.
+`@redrixx/nexus-react` is a thin binding: components subscribe as _readers_. The
+hooks expose no Nexus mutation method; mutation normally lives on an owner or a
+narrow command wired at a composition root.
 
 ```tsx
 import { useEntities, useEntity } from "@redrixx/nexus-react";
 
 function Roster({ users }: { users: EntityReader<User> }) {
-  const map = useEntities(users);            // re-renders when the set changes
+  const map = useEntities(users); // re-renders when the set changes
   return <>{[...map.values()].map((u) => u.name).join(", ")}</>;
 }
 
 function Status({ users, id }: { users: EntityReader<User>; id: string }) {
-  const user = useEntity(users, id);         // selective: only this entity
+  const user = useEntity(users, id); // selective: only this entity
   return <span>{user?.online ? "🟢" : "⚪"}</span>;
 }
 ```
@@ -138,16 +323,90 @@ Core is fully usable without React; the adapter is ~30 lines over
 
 ## How is this different from a state library?
 
-You can hold a Zustand store, read it anywhere, and write it anywhere — authority
-is ambient. Nexus inverts that: a store is created by an owner, and only a
-`reader` is shared. The type system and the runtime both refuse writes from
-anywhere but the owner. Use a state library to decide _where state lives_; use
-Nexus to decide _who is in charge of it_. They are not competitors so much as
-answers to different questions — and for apps where "who changed this?" is the
-hard bug, authority is the missing primitive.
+A well-structured Zustand, Redux, Jotai, Solid, or RxJS application can already
+restrict mutation by convention and through its own APIs. Nexus adds an explicit
+capability split: an owner retains the writer while most consumers receive only
+a reader and narrow commands. It does not replace the underlying library's
+storage, reactivity, selectors, update propagation, DevTools, or ecosystem.
 
 See the [before/after demo](./apps/demo) — the same chat channel built as a god
 hook and as Nexus, side by side.
+
+For typechecked built-in, hand-rolled, Zustand, Redux Toolkit, and Solid
+recipes, including fair native comparisons and dynamically scoped variants, see
+[State libraries inside the Nexus shape](./apps/state-library-recipes).
+
+## Anti-patterns
+
+- **Exporting raw writers from owner modules.** Export readers and narrow domain
+  commands; exporting the writer gives every importer its full authority.
+- **Registering a root full of unrestricted stores.** A registry should publish
+  the intended application surface, not relocate ambient mutation.
+- **Turning a root into another god object.** Keep policy and lifetime with
+  focused domain owners; use the root to assemble and connect them.
+- **Using Nexus for every boolean and input field.** Local state should stay
+  local when shared authority and lifecycle are not real concerns.
+- **Allowing owners to reach into unrelated owners.** Route an explicit command
+  or event across the boundary so the responsible owner retains its policy.
+- **Defaulting to `upsert` because strict transitions exposed bugs.** Decide
+  whether replay or replacement is valid before making a failure lenient.
+- **Returning mutable collections through supposedly readonly APIs.** Reader
+  handles remove Nexus mutation methods; readonly types and immutable values are
+  still required for a meaningful public boundary.
+
+## FAQ
+
+### Why not just keep Zustand setters private?
+
+Do that when it is enough. A disciplined Zustand module can provide a strong
+boundary. Nexus is useful when you want the same explicit reader/writer shape,
+strict entity-existence operations, and scoped ownership conventions across
+stores and features. It adds ceremony, so the return should be concrete.
+
+### How is this different from Redux dispatch?
+
+Redux already provides centralized transitions, actions, reducers, middleware,
+and excellent tooling. Nexus does not replace those. The additional question is
+who receives `dispatch`, who receives observation only, and who owns and
+disposes dynamically scoped Redux store instances.
+
+### How is this related to actors?
+
+Both emphasize ownership and message-like commands. Nexus does not provide an
+actor scheduler, mailbox, supervision tree, isolation, or a complete transition
+runtime. It is a small capability and lifecycle layer that can be used inside an
+actor-shaped architecture.
+
+### Does Nexus replace my store?
+
+No. Use the built-in cell if its small feature set is sufficient, or retain
+Zustand, Redux, Solid, or another substrate for storage and reactivity. Nexus
+organizes ownership and the public capability surface around it.
+
+### Can I use it without React?
+
+Yes. `@redrixx/nexus` is framework-agnostic and has zero runtime dependencies.
+`@redrixx/nexus-react` is the currently shipped optional UI adapter.
+
+### Can Nexus guarantee one human or module writer?
+
+No. It creates one writer capability and a separate reader capability. The
+writer can be exported or shared, and then every holder has authority. Nexus
+makes disciplined ownership visible; it does not identify an owner at runtime.
+
+### Is Nexus useful without strict entity lifecycle?
+
+Potentially. The reader/writer split and ownership topology can stand alone, and
+`createCell` has no entity lifecycle. For entity collections, strict operations
+are the default while named lenient operations exist for legitimate replay,
+replacement, and idempotency cases.
+
+### What happens during HMR and tests?
+
+Registries reject duplicate registration. Dispose scoped owners and
+subscriptions, then call `reset()` before registering a replacement during HMR
+or between tests. Prefer fresh owners and registries per test when practical so
+state and subscription lifetime remain deterministic.
 
 ## Not yet supported (v0.1 non-goals)
 
@@ -167,12 +426,37 @@ Deliberately out of scope for now, to keep the core small and honest:
 Pre-1.0. The API is small and the shape is settling, but minor (`0.x`) releases
 may still make breaking changes. Pin a version if that matters to you.
 
+The [package contract](./docs/package-contract.md) documents capability and
+subscription guarantees, strict and lenient lifecycle behavior, `clear()`
+semantics, persistence errors, scoped disposal tests, and measured collection
+size guidance.
+
+See the [public API reference](./docs/api.md), [changelog](./CHANGELOG.md),
+[support policy](./SUPPORT.md), [security policy](./SECURITY.md), and
+[contribution guide](./CONTRIBUTING.md). The
+[release-readiness checklist](./docs/release-checklist.md) records locally
+verified gates and explicitly deferred release actions.
+
+## Adoption guides
+
+Start with [Should this feature use Nexus?](./docs/adoption/decision-tree.md),
+then follow the relevant migration path:
+
+- [From an ambient module store](./docs/adoption/from-ambient-store.md)
+- [From a global Zustand store to scoped factories](./docs/adoption/from-global-zustand.md)
+- [Where does this mutation belong?](./docs/adoption/where-does-this-mutation-belong.md)
+- [Community → channel → message registry](./docs/adoption/dynamic-registry.md)
+- [Testing strict lifecycle and event ordering](./docs/adoption/testing.md)
+- [Terminology](./docs/adoption/terminology.md)
+
+The [adoption index](./docs/adoption) connects the full set.
+
 ## Packages
 
-| Package | What it is |
-| --- | --- |
-| [`@redrixx/nexus`](./packages/core) | The runtime. Zero dependencies. |
-| [`@redrixx/nexus-react`](./packages/react) | React bindings. |
+| Package                                    | What it is                                                 |
+| ------------------------------------------ | ---------------------------------------------------------- |
+| [`@redrixx/nexus`](./packages/core)        | The framework-agnostic runtime. Zero runtime dependencies. |
+| [`@redrixx/nexus-react`](./packages/react) | React bindings.                                            |
 
 ## License
 

@@ -15,5 +15,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # typecheck (all workspaces) + tests + build + publint/attw export checks
       - run: npm run ci
+
+  react-18:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install minimum supported React
+        run: |
+          npm pkg set "devDependencies.react=18.3.1" "devDependencies.react-dom=18.3.1" "devDependencies.react-test-renderer=18.3.1" "devDependencies.@types/react=18.3.28" "devDependencies.@types/react-test-renderer=18.3.1" --workspace @redrixx/nexus-react
+          npm install
+      - run: npm run build
+      - run: npm run test:compat --workspace @redrixx/nexus-react

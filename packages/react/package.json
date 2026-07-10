@@ -10,14 +10,15 @@
     }
   },
   "types": "./dist/index.d.ts",
-  "files": ["dist", "NOTICE"],
+  "files": [
+    "dist",
+    "NOTICE"
+  ],
   "sideEffects": false,
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
+    "test:compat": "node compat/react-smoke.mjs",
     "check:exports": "publint && attw --pack . --profile esm-only",
     "prepublishOnly": "npm run build"
   },
@@ -47,8 +48,10 @@
     "@redrixx/nexus": "*",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.0",
+    "@types/react-test-renderer": "^19.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-test-renderer": "^19.0.0"
   },
   "publishConfig": {
     "access": "public"

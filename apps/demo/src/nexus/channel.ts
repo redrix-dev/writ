@@ -20,7 +20,7 @@ export function createChannel(server: Server) {
   const presence = createEntityStore<User>();
   const messages = createEntityStore<Message>();
   // Visibility policy is OWNED by the same root as messages — co-located, not a
-  // reach-in to some unrelated store. Toggling goes through the one writer below.
+  // reach-in to some unrelated store. Toggling uses the retained writer below.
   const blocked = createCell<ReadonlySet<string>>(new Set());
 
   const unsubscribe = server.subscribe((event) => {

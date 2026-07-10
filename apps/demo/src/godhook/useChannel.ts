@@ -59,7 +59,10 @@ export function useChannel(server: Server) {
           setTyping((t) => ({ ...t, [event.userId]: event.typing }));
           setPresence((p) =>
             p[event.userId]
-              ? { ...p, [event.userId]: { ...p[event.userId]!, typing: event.typing } }
+              ? {
+                  ...p,
+                  [event.userId]: { ...p[event.userId]!, typing: event.typing },
+                }
               : p,
           );
           break;
@@ -79,7 +82,10 @@ export function useChannel(server: Server) {
     () => Object.values(presence).sort((a, b) => a.name.localeCompare(b.name)),
     [presence],
   );
-  const typers = useMemo(() => roster.filter((u) => typing[u.id]), [roster, typing]);
+  const typers = useMemo(
+    () => roster.filter((u) => typing[u.id]),
+    [roster, typing],
+  );
   // The filter reaches into socialStore — visibility lives in two places.
   const visibleMessages = useMemo(
     () => messages.filter((m) => !blockedIds.has(m.authorId)),

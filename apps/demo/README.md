@@ -1,44 +1,42 @@
-# Nexus demo — god hook vs. Nexus
+# Nexus evidence lab
 
-The same chat channel (presence + typing + messages), driven by the same
-simulated event stream, rendered by the same UI component — implemented twice.
-Toggle between them:
+The demo runs one deterministic domain scenario across three implementation
+views:
 
-- **God hook** (`src/godhook/`) — one `useChannel` owns everything. Its three
-  pathologies are distilled faithfully from a real **~2097-line `useMessages`
-  hook** (see below):
-  - **Ambient module state** — messages live in `messageCache.ts`, a module-level
-    store any file can read or wipe (the "Clear from outside the hook" button
-    does exactly that).
-  - **Cross-store authority** — visibility (blocked users) is decided by reaching
-    into an unrelated `socialStore`, so "who can hide a message?" is split across
-    two places.
-  - **No boundary** — presence/typing setters are handed back to callers.
-- **Nexus** (`src/nexus/`) — `presence`, `messages`, and the `blocked` set are all
-  owned by one composition root (`channel.ts`). The server handler is the only
-  writer; components get readers with no write path. Visibility policy is
-  co-located with messages and toggled through the root's writer. Lifecycle is
-  explicit: join → `upsert`, leave → `destroyIfPresent`, message → `spawn`.
+1. **Ambient / historical** — the failure shape distilled from Haven's real
+   ~2,097-line god hook: module state, cross-store reach-ins, and exported
+   writes.
+2. **Disciplined native store** — a fair alternative with private mutation and
+   named actions.
+3. **Nexus-shaped** — owners retain writers while consumers receive observation
+   and narrow commands.
 
-The only difference between the two is **who has authority over the state**.
+Every view receives the same multi-community event stream and renders the same
+channel UI. The stream includes dynamically opened and closed channel scopes,
+presence, messages, blocked-user visibility policy, optimistic sends,
+persistence, reconnect replay, and deterministic disposal.
 
-### Distilled from a real god hook
+The evidence panels expose:
 
-The god-hook side isn't a strawman. It mirrors the actual pre-Nexus `useMessages`
-hook from Haven — ~2097 lines, a 23-dependency effect, four realtime
-subscriptions, module-level `crossSessionMessageBundleByChannel` caches mutated
-through exported functions, and ~77 reach-ins to `useSocialStore` /
-`usePermissionsStore` / `useUserStatusStore`. It already used a state library
-(zustand); storage was solved, and authority still wasn't. That's the point:
-**state libraries manage storage; Nexus manages authority.**
+- Event sources, owner boundary, store instances, observers, and command paths.
+- Event source, target scope, requested operation, owner, lifecycle transition,
+  accepted/rejected/ignored result, and notified subscribers.
+- Active, persisted, in-memory, and disposed scoped stores.
+- Duplicate spawn, missing update, repeated destroy, reader-write, and
+  deliberate writer-leak probes.
+- The actual public surface for each implementation view.
+- What Nexus did not solve.
+
+Render counts are deliberately not the headline. The demo focuses on mutation
+surface, ownership topology, dynamic scope, lifecycle, and invalid transitions.
 
 ## Run
 
 ```bash
-npm install            # from the repo root
-npm run demo           # vite dev server
+npm install
+npm run demo
 # or: npm run demo:build && npm --workspace @redrixx/nexus-demo run preview
 ```
 
-Vite aliases resolve `@redrixx/nexus` and `@redrixx/nexus-react` to their source,
-so there is no build step for the packages — edit core and the demo hot-reloads.
+Vite resolves the local Nexus packages from source, so package builds are not
+required during demo development.

@@ -30,7 +30,7 @@ const CHATTER = [
   "shipping the thing today 🚀",
   "brb, coffee",
   "that bug was authority, not storage",
-  "one writer, many readers 🙏",
+  "authority as a capability 🙏",
   "who owns this state though",
   "lgtm",
   "presence is just entities being born and dying",
@@ -45,7 +45,8 @@ export const LOCAL_USER: User = {
 
 let seq = 0;
 const nextId = (prefix: string): string => `${prefix}-${Date.now()}-${seq++}`;
-const pick = <T>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.length)]!;
+const pick = <T>(xs: readonly T[]): T =>
+  xs[Math.floor(Math.random() * xs.length)]!;
 
 export interface Server {
   subscribe(listener: (event: ServerEvent) => void): () => void;
