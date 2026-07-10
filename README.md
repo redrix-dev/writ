@@ -31,6 +31,31 @@ counter.get();               // 1
 counter.subscribe(() => { /* re-read on change */ });
 ```
 
+### React
+
+`@redrixx/nexus-react` is a thin binding — components subscribe as _readers_.
+There is no way to mutate a store from a hook; writes live on the owner, wired
+at your composition root.
+
+```tsx
+import { createEntityStore } from "@redrixx/nexus";
+import { useEntities, useEntity } from "@redrixx/nexus-react";
+
+// owner (composition root)
+const users = createEntityStore<User>();
+
+// readers (components)
+function Roster() {
+  const users = useEntities(userReader);      // re-renders when the set changes
+  return <>{[...users.values()].map((u) => u.name)}</>;
+}
+
+function Status({ id }: { id: string }) {
+  const user = useEntity(userReader, id);      // selective: only this entity
+  return <span>{user?.status}</span>;
+}
+```
+
 ## Status
 
 **Pre-release (v0.1, in progress).** The core primitive (one-writer cell) and the

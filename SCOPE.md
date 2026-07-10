@@ -65,9 +65,18 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
 - **CORE FEATURE-COMPLETE for v0.1** (41 tests): cell (one-writer) · entity store
   (strict lifecycle) · registry (composition root) · persistence port. Zero deps,
   host-agnostic build.
-- **NEXT → step 5: React adapter** (`packages/react`, new package). Ship `useReader`,
-  `useEntities`, `useEntity` over `useSyncExternalStore`. `useSelector` (derived values)
-  deferred — footgun-prone (getSnapshot caching); the demo will say if it's needed.
+- **Step 5 DONE** (2026-07-10): `packages/react` → `@redrixx/nexus-react`. Hooks
+  `useReader` / `useEntities` / `useEntity` over `useSyncExternalStore`. `useEntity` is
+  selective (proven by test: no re-render when a *different* entity changes). React +
+  core are peerDeps; adapter carries no logic, just subscription. jsdom test env via
+  per-file `@vitest-environment` docblock. 45 tests total.
+- **DELIVERABLES 1 & 2 COMPLETE.** Core runtime + React adapter, both usable, both tested.
+  `useSelector` (derived values) still deferred — footgun-prone; add if the demo needs it.
+- **NEXT → step 6: before/after demo** — NEEDS CODY INPUT on the slice + framing before
+  building (chat-channel-with-presence is the leading candidate; god-hook vs Nexus side by
+  side). This is the big creative piece; not auto-building it.
+- Build order note for CI: `@redrixx/nexus` must build before `@redrixx/nexus-react`
+  (react resolves core types from `dist`). Wire topological build / project refs in CI.
 
 ## Deferred (perf/ergonomics, not v0.1 blockers)
 - Copy-on-write is O(n)/write. Fine for lifecycle-owner entity counts; add batched/

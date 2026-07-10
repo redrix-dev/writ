@@ -1,0 +1,13 @@
+{
+  // Build: emits dist/, excludes tests. hooks.ts uses only React module types
+  // (imported), so no DOM lib is needed in the shipped output.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "noEmit": false,
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "@redrixx/nexus-react",
+  "version": "0.0.0",
+  "description": "React bindings for @redrixx/nexus — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "state-management",
+    "nexus",
+    "useSyncExternalStore"
+  ],
+  "author": "Cody Magnuson (redrixx)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redrix-dev/nexus.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/redrix-dev/nexus#readme",
+  "bugs": {
+    "url": "https://github.com/redrix-dev/nexus/issues"
+  },
+  "peerDependencies": {
+    "@redrixx/nexus": "*",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@redrixx/nexus": "*",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
