@@ -72,10 +72,21 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
   per-file `@vitest-environment` docblock. 45 tests total.
 - **DELIVERABLES 1 & 2 COMPLETE.** Core runtime + React adapter, both usable, both tested.
   `useSelector` (derived values) still deferred — footgun-prone; add if the demo needs it.
-- **NEXT → step 6: before/after demo** — NEEDS CODY INPUT on the slice + framing before
-  building (chat-channel-with-presence is the leading candidate; god-hook vs Nexus side by
-  side). This is the big creative piece; not auto-building it.
-- Build order note for CI: `@redrixx/nexus` must build before `@redrixx/nexus-react`
+- **Step 6 DONE** (2026-07-10): `apps/demo` → `@redrixx/nexus-demo`. Vite + React
+  before/after: chat channel with presence, god-hook vs Nexus, toggle, SAME UI
+  (`ui/ChannelView`) off the SAME simulated event stream (`simulator.ts`) so the only
+  difference is state authority. God hook (`godhook/`) exposes setters + one re-render
+  blob; Nexus (`nexus/channel.ts`) wires presence + messages entity stores in one
+  composition root, server handler is sole writer, components are readers (join→upsert,
+  leave→destroyIfPresent, message→spawn). Vite aliases resolve packages from source (no
+  build-order dance; hot reload; bundles clean for deploy). **Verified end-to-end** via
+  headless Chromium: both modes render, presence seeds/churns, local send appears, toggle
+  works; only console noise was a favicon 404 (fixed). Prod build: 202 KB / 64 KB gzip.
+- **DELIVERABLE 3 COMPLETE.** Deliverables 1–3 done (core, React adapter, demo).
+- **NEXT → step 7: standalone README** (full pitch + "Not yet supported"). Then step 8:
+  CI (typecheck/test/build/publint/attw, topological order) + Vercel deploy of the demo +
+  npm publish once Cody claims the `redrixx` scope.
+- Build-order note for CI: `@redrixx/nexus` must build before `@redrixx/nexus-react`
   (react resolves core types from `dist`). Wire topological build / project refs in CI.
 
 ## Deferred (perf/ergonomics, not v0.1 blockers)

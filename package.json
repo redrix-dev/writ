@@ -5,13 +5,16 @@
   "description": "Monorepo for @redrixx/nexus — an authority-oriented entity-lifecycle state runtime.",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace @redrixx/nexus --workspace @redrixx/nexus-react",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "demo": "npm run dev --workspace @redrixx/nexus-demo",
+    "demo:build": "npm run build --workspace @redrixx/nexus-demo"
   },
   "repository": {
     "type": "git",

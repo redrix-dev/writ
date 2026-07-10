@@ -1,0 +1,26 @@
+{
+  // Bundled app (not a published lib): bundler resolution, Vite compiles from
+  // source. `paths` point the workspace packages at their source so typecheck
+  // needs no prebuilt dist.
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@redrixx/nexus": ["../../packages/core/src/index.ts"],
+      "@redrixx/nexus-react": ["../../packages/react/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}
