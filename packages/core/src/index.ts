@@ -13,6 +13,7 @@ export {
   type EntityReader,
   type EntityStoreOptions,
 } from "./entities.js";
+export { createRegistry, type Registry } from "./registry.js";
 export {
   createMemoryPersistence,
   type Persistence,

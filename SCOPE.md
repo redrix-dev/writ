@@ -57,8 +57,17 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
 - Added host-agnostic `warn` helper (reaches `console` via `globalThis`, no DOM/Node dep
   in shipped build). `@types/node` is dev-only; `tsconfig.build.json` keeps `types: []`
   so declarations stay host-agnostic (verified: no node refs in dist `.d.ts`).
-- **NEXT → step 4: registry** (`createRegistry`: register/require/get/reset) — the
-  composition-root singleton, generalized from Haven's `havenSolidRef`.
+- **Step 4 DONE** (2026-07-10): `createRegistry(name)` — composition-root singleton.
+  `register` is strict (throws on double-register, naming `reset()` as the explicit
+  re-register path — same "explicit over silent" principle; catches stray-second-root
+  hijack). `require`/`get`/`reset`. Boxed slot so a nullish instance still counts as
+  registered. Independent per call. 8 tests.
+- **CORE FEATURE-COMPLETE for v0.1** (41 tests): cell (one-writer) · entity store
+  (strict lifecycle) · registry (composition root) · persistence port. Zero deps,
+  host-agnostic build.
+- **NEXT → step 5: React adapter** (`packages/react`, new package). Ship `useReader`,
+  `useEntities`, `useEntity` over `useSyncExternalStore`. `useSelector` (derived values)
+  deferred — footgun-prone (getSnapshot caching); the demo will say if it's needed.
 
 ## Deferred (perf/ergonomics, not v0.1 blockers)
 - Copy-on-write is O(n)/write. Fine for lifecycle-owner entity counts; add batched/
