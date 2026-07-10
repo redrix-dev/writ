@@ -5,7 +5,11 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "noEmit": true
+    "noEmit": true,
+    // Tests + tooling get Node globals (console, etc.). The shipped build
+    // (tsconfig.build.json) keeps `types: []`, so the library itself stays
+    // host-agnostic.
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

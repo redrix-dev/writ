@@ -2,7 +2,8 @@
   // Root config for editors / whole-repo typecheck. Packages have their own.
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   },
   "include": ["packages/*/src/**/*"]
 }

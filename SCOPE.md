@@ -46,8 +46,27 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
   typecheck clean, build emits `.d.ts`/`.d.ts.map`/`.js`/`.js.map`.
 - **TS 7 (`tsgo`) verdict: KEEP.** `typescript@7.0.2` builds + emits declarations cleanly;
   the SCOPE risk is cleared. No need to pin 5.x.
-- **NEXT → step 3: entity store** (`createEntityStore`: spawn/update/destroy/clear). This
-  is the API surface flagged for Cody's review before it's locked.
+- **Step 3 DONE** (2026-07-10): `createEntityStore` — strict lifecycle by default
+  (`spawn` throws if alive; `update`/`destroy` throw if absent), explicit named escape
+  hatches (`upsert`, `destroyIfPresent`), each strict error naming its escape hatch.
+  Copy-on-write `ReadonlyMap` so readers/`useSyncExternalStore` see every change.
+  Optional persistence (write-through auto-persist + `rehydrate`, key required when
+  persistence set, corrupt-data recovery). Authority proven structural (reader has no
+  lifecycle methods). 33 tests green. **Design principle locked (Cody): "authority with
+  configuration" — strict default, escape hatches are explicit, named, non-footgun opt-ins.**
+- Added host-agnostic `warn` helper (reaches `console` via `globalThis`, no DOM/Node dep
+  in shipped build). `@types/node` is dev-only; `tsconfig.build.json` keeps `types: []`
+  so declarations stay host-agnostic (verified: no node refs in dist `.d.ts`).
+- **NEXT → step 4: registry** (`createRegistry`: register/require/get/reset) — the
+  composition-root singleton, generalized from Haven's `havenSolidRef`.
+
+## Deferred (perf/ergonomics, not v0.1 blockers)
+- Copy-on-write is O(n)/write. Fine for lifecycle-owner entity counts; add batched/
+  structural-sharing path only if a real workload needs it.
+- Write-through auto-persist calls `JSON.stringify` per mutation. Add debounce/microtask
+  batching if it shows up as hot. Explicit `persist()` already exists as the manual path.
+- `patchIfPresent` (lenient update escape hatch) intentionally omitted — guard with
+  `reader.has(id)` for now; add only if the demo proves it common.
 
 ## Extraction order (each step independently shippable)
 1. Persistence port + memory adapter

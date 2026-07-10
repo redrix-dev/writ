@@ -8,6 +8,12 @@
 
 export { createCell, type Reader, type Writer } from "./store.js";
 export {
+  createEntityStore,
+  type EntityStore,
+  type EntityReader,
+  type EntityStoreOptions,
+} from "./entities.js";
+export {
   createMemoryPersistence,
   type Persistence,
 } from "./persistence.js";
