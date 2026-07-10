@@ -28,16 +28,16 @@ keeps) whose `.reader` (handed out) has *no write method*. Authority in code, no
 - **License is NOT BUSL.** Haven is BUSL-1.1 (source-available); the OSS package is
   MIT or Apache-2.0. _(pick one — open decision #5)_
 
+## Decided (2026-07-10, Cody)
+1. **Repo structure:** MONOREPO — `packages/core` (zero deps, zero React) + `packages/react`.
+2. **Authority granularity:** PER-STORE owner for v0.1. → tagline must say "every entity
+   **collection** has one owner," or per-entity authority goes on the roadmap. (revisit in README pass)
+3. **Reactive substrate:** SHIP OUR OWN ~40-line vanilla store; React adapter = `useSyncExternalStore`.
+4. **License:** APACHE-2.0 (LICENSE + NOTICE, per-file headers optional). NOT BUSL.
+
 ## Open decisions (BLOCKING — need Cody's call)
-1. **Repo structure:** monorepo (`packages/core` + `packages/react`) vs single pkg w/
-   `./react` subpath. → rec: monorepo.
-2. **Authority granularity:** one-writer-per-**store** (Haven-accurate) vs
-   per-**entity** (tagline-literal). → rec: per-store for v0.1, soften tagline or
-   roadmap per-entity.
-3. **Reactive substrate:** ship-own vanilla store vs BYO-store adapter. → rec: ship-own.
-4. **Package name:** npm `nexus` is TAKEN (deprecated GraphQL lib). Need scoped name,
-   e.g. `@redrixx/nexus`. → open.
-5. **License:** MIT vs Apache-2.0. → open.
+5. **Package name:** npm `nexus` is TAKEN (deprecated GraphQL lib). Use a scope you own —
+   `@redrixx/nexus` or `@redrix-dev/nexus` (bare local name stays "nexus"). → need your npm scope/handle.
 
 ## Extraction order (each step independently shippable)
 1. Persistence port + memory adapter
