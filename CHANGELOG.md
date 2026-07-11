@@ -6,6 +6,10 @@ All notable changes to this project will be documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-07-10
+
+Initial public release of `@redrixx/writ` and `@redrixx/writ-react`.
+
 ### Added
 
 - Authority-oriented core with separate writer and reader capabilities.
@@ -14,10 +18,6 @@ All notable changes to this project will be documented here. The format follows
 - Strict composition-root registry.
 - React adapter based on `useSyncExternalStore`.
 - State-library recipes, evidence demo, package contract, and adoption guides.
-
-## [0.1.0] - Unreleased
-
-Initial public package shape. This version has not been published or tagged.
 
 ### Pre-1.0 policy
 
