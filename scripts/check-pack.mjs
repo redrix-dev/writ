@@ -26,7 +26,11 @@ for (const pkg of packages) {
     cwd: path.join(root, pkg.directory),
     encoding: "utf8",
   });
-  const [manifest] = JSON.parse(output);
+  const parsed = JSON.parse(output);
+  const manifest = Array.isArray(parsed) ? parsed[0] : parsed;
+  if (!manifest || !Array.isArray(manifest.files)) {
+    throw new Error(`${pkg.name}: npm pack returned an invalid manifest`);
+  }
   const files = new Set(manifest.files.map((file) => file.path));
 
   for (const expected of required) {
