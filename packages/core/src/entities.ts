@@ -28,7 +28,7 @@ import { createCell, type Reader } from "./store.js";
 import type { Persistence } from "./persistence.js";
 import { warn } from "./warn.js";
 
-/** Entity handle with no projectname mutation method; values are not deep-frozen. */
+/** Entity handle with no writ mutation method; values are not deep-frozen. */
 export interface EntityReader<T> extends Reader<ReadonlyMap<string, T>> {
   /** The entity for `id`, or `undefined` if none is alive. */
   getEntity(id: string): T | undefined;
@@ -110,7 +110,7 @@ export function createEntityStore<T extends object>(
     try {
       persistence.set(key, serialize(cell.reader.get()));
     } catch (err) {
-      warn(`[projectname] failed to persist entity store "${key}"`, err);
+      warn(`[writ] failed to persist entity store "${key}"`, err);
     }
   };
 
@@ -176,7 +176,7 @@ export function createEntityStore<T extends object>(
     try {
       cell.set(new Map(deserialize(raw)));
     } catch (err) {
-      warn(`[projectname] failed to rehydrate entity store "${key}"`, err);
+      warn(`[writ] failed to rehydrate entity store "${key}"`, err);
       persistence.remove(key);
     }
   };

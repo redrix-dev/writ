@@ -1,6 +1,6 @@
-import { createEntityStore } from "@redrixx/projectname";
+import { createEntityStore } from "@redrixx/writ";
 
-export type Mode = "ambient" | "native" | "projectname";
+export type Mode = "ambient" | "native" | "writ";
 export type Result = "accepted" | "rejected" | "ignored";
 
 export type DemoEvent = Readonly<{
@@ -163,8 +163,7 @@ type Scope = {
   messages: Map<string, DemoMessage>;
   presence: Set<string>;
   blockedAuthors: Set<string>;
-  projectnameMessages:
-    ReturnType<typeof createEntityStore<DemoMessage>> | undefined;
+  writMessages: ReturnType<typeof createEntityStore<DemoMessage>> | undefined;
   disposed: boolean;
   persisted: boolean;
 };
@@ -277,7 +276,7 @@ export class EvidenceRuntime {
           scope.disposed = true;
           scope.messages.clear();
           scope.presence.clear();
-          scope.projectnameMessages?.clear();
+          scope.writMessages?.clear();
           transition = "active → disposed";
           detail = "subscriptions cleaned; in-memory state released";
           notified.push("scope panel", "channel view");
@@ -332,10 +331,10 @@ export class EvidenceRuntime {
           detail = "duplicate spawn exposed an invalid transition";
         } else {
           scope.messages.set(id, message);
-          if (scope.projectnameMessages) {
-            if (scope.projectnameMessages.reader.has(id))
-              scope.projectnameMessages.upsert(id, message);
-            else scope.projectnameMessages.spawn(id, message);
+          if (scope.writMessages) {
+            if (scope.writMessages.reader.has(id))
+              scope.writMessages.upsert(id, message);
+            else scope.writMessages.spawn(id, message);
           }
           transition = duplicate ? "present → replaced" : "absent → present";
           detail =
@@ -373,10 +372,8 @@ export class EvidenceRuntime {
       messages: new Map(),
       presence: new Set(),
       blockedAuthors: new Set(),
-      projectnameMessages:
-        this.mode === "projectname"
-          ? createEntityStore<DemoMessage>()
-          : undefined,
+      writMessages:
+        this.mode === "writ" ? createEntityStore<DemoMessage>() : undefined,
       disposed: false,
       persisted: communityId === "design",
     };
@@ -419,7 +416,7 @@ export class EvidenceRuntime {
           communityId: scope.communityId,
           channelId: scope.channelId,
         }),
-        stores: this.mode === "projectname" ? 2 : 1,
+        stores: this.mode === "writ" ? 2 : 1,
         subscribers: scope.disposed ? 0 : this.#listeners.size,
         persisted: scope.persisted,
         disposed: scope.disposed,
@@ -435,7 +432,7 @@ export const eventCount = scriptedEvents.length;
 export const publicSurface: Record<Mode, readonly string[]> = {
   ambient: ["messages", "presence", "setMessages", "setPresence", "clearAll"],
   native: ["getState", "subscribe", "sendMessage", "toggleBlock"],
-  projectname: [
+  writ: [
     "messages: EntityReader",
     "presence: Reader",
     "sendMessage(command)",

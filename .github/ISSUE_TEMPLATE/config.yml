@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/redrix-dev/projectname/security/advisories/new
+    url: https://github.com/redrix-dev/writ/security/advisories/new
     about: Report security issues privately when private reporting is available.

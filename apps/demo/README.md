@@ -1,4 +1,4 @@
-# projectname evidence lab
+# writ evidence lab
 
 The demo runs one deterministic domain scenario across three implementation
 views:
@@ -8,8 +8,8 @@ views:
    writes.
 2. **Disciplined native store** — a fair alternative with private mutation and
    named actions.
-3. **projectname-shaped** — owners retain writers while consumers receive
-   observation and narrow commands.
+3. **writ-shaped** — owners retain writers while consumers receive observation
+   and narrow commands.
 
 Every view receives the same multi-community event stream and renders the same
 channel UI. The stream includes dynamically opened and closed channel scopes,
@@ -25,7 +25,7 @@ The evidence panels expose:
 - Duplicate spawn, missing update, repeated destroy, reader-write, and
   deliberate writer-leak probes.
 - The actual public surface for each implementation view.
-- What projectname did not solve.
+- What writ did not solve.
 
 Render counts are deliberately not the headline. The demo focuses on mutation
 surface, ownership topology, dynamic scope, lifecycle, and invalid transitions.
@@ -35,8 +35,8 @@ surface, ownership topology, dynamic scope, lifecycle, and invalid transitions.
 ```bash
 npm install
 npm run demo
-# or: npm run demo:build && npm --workspace @redrixx/projectname-demo run preview
+# or: npm run demo:build && npm --workspace @redrixx/writ-demo run preview
 ```
 
-Vite resolves the local projectname packages from source, so package builds are
-not required during demo development.
+Vite resolves the local writ packages from source, so package builds are not
+required during demo development.

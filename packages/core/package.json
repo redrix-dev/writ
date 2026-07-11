@@ -1,5 +1,5 @@
 {
-  "name": "@redrixx/projectname",
+  "name": "@redrixx/writ",
   "version": "0.1.0",
   "description": "A substrate-agnostic ownership and lifecycle contract for hot shared state, with separate writer and reader capabilities.",
   "type": "module",
@@ -36,12 +36,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/redrix-dev/projectname.git",
+    "url": "git+https://github.com/redrix-dev/writ.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/redrix-dev/projectname#readme",
+  "homepage": "https://github.com/redrix-dev/writ#readme",
   "bugs": {
-    "url": "https://github.com/redrix-dev/projectname/issues"
+    "url": "https://github.com/redrix-dev/writ/issues"
   },
   "publishConfig": {
     "access": "public"

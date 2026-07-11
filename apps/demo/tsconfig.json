@@ -18,8 +18,8 @@
     "noEmit": true,
     "types": ["node"],
     "paths": {
-      "@redrixx/projectname": ["../../packages/core/src/index.ts"],
-      "@redrixx/projectname-react": ["../../packages/react/src/index.ts"]
+      "@redrixx/writ": ["../../packages/core/src/index.ts"],
+      "@redrixx/writ-react": ["../../packages/react/src/index.ts"]
     }
   },
   "include": ["src"]

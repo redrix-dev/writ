@@ -30,8 +30,7 @@ npm run benchmark:contract
 - `packages/core` — framework-agnostic, zero-runtime-dependency core.
 - `packages/react` — optional React adapter.
 - `apps/demo` — evidence lab using one shared scenario across implementations.
-- `apps/state-library-recipes` — typechecked native and projectname-shaped
-  recipes.
+- `apps/state-library-recipes` — typechecked native and writ-shaped recipes.
 - `docs` — package contract, adoption guidance, and design history.
 
 ## Change expectations

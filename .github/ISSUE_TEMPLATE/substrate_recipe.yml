@@ -1,6 +1,5 @@
 name: Substrate recipe
-description:
-  Share evidence for a store living inside the projectname ownership shape.
+description: Share evidence for a store living inside the writ ownership shape.
 title: "[Recipe]: "
 labels: [recipe]
 body:

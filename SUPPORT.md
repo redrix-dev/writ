@@ -2,11 +2,9 @@
 
 ## Maintained in 0.1
 
-- `@redrixx/projectname`: cells, entity stores, strict/lenient existence
-  lifecycle, synchronous persistence port, memory persistence, and strict
-  registry.
-- `@redrixx/projectname-react`: React 18 and 19 hooks over the public reader
-  contract.
+- `@redrixx/writ`: cells, entity stores, strict/lenient existence lifecycle,
+  synchronous persistence port, memory persistence, and strict registry.
+- `@redrixx/writ-react`: React 18 and 19 hooks over the public reader contract.
 - ESM consumers using modern bundlers or Node ESM.
 - TypeScript 5.0 and newer declaration consumption.
 

@@ -1,8 +1,8 @@
 /**
- * @redrixx/projectname — a substrate-agnostic ownership and entity-lifecycle contract.
+ * @redrixx/writ — a substrate-agnostic ownership and entity-lifecycle contract.
  *
- * projectname creates separate writer and reader capabilities. Code holding only a
- * reader has no projectname mutation method; sharing a writer shares its authority.
+ * writ creates separate writer and reader capabilities. Code holding only a
+ * reader has no writ mutation method; sharing a writer shares its authority.
  */
 
 export { createCell, type Reader, type Writer } from "./store.js";

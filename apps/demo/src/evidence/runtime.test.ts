@@ -14,20 +14,18 @@ describe("evidence runtime", () => {
   it("shows ambient duplicate writes being accepted while disciplined modes reject them", () => {
     expect(latestResult("ambient", "duplicate-spawn").result).toBe("accepted");
     expect(latestResult("native", "duplicate-spawn").result).toBe("rejected");
-    expect(latestResult("projectname", "duplicate-spawn").result).toBe(
-      "rejected",
-    );
+    expect(latestResult("writ", "duplicate-spawn").result).toBe("rejected");
   });
 
   it("shows the reader boundary and its deliberate writer-leak limit", () => {
-    expect(latestResult("projectname", "reader-write").result).toBe("rejected");
-    const leaked = latestResult("projectname", "leaked-writer");
+    expect(latestResult("writ", "reader-write").result).toBe("rejected");
+    const leaked = latestResult("writ", "leaked-writer");
     expect(leaked.result).toBe("accepted");
     expect(leaked.detail).toContain("deliberately shared");
   });
 
   it("filters messages when blocked-user policy is applied", () => {
-    const runtime = new EvidenceRuntime("projectname");
+    const runtime = new EvidenceRuntime("writ");
     runtime.next(); // optimistic send
     runtime.next(); // policy block
     const snapshot = runtime.getSnapshot();
@@ -36,7 +34,7 @@ describe("evidence runtime", () => {
   });
 
   it("marks scoped owners disposed and releases their subscribers", () => {
-    const runtime = new EvidenceRuntime("projectname");
+    const runtime = new EvidenceRuntime("writ");
     for (let index = 0; index < 8; index++) runtime.next();
     const disposed = runtime
       .getSnapshot()

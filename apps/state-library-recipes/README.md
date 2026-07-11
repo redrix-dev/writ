@@ -1,4 +1,4 @@
-# State libraries inside the projectname shape
+# State libraries inside the writ shape
 
 These typechecked recipes use one scenario throughout: realtime messages in
 dynamically scoped community channels. They are informed by Haven's production
@@ -13,13 +13,13 @@ patterns:
 
 Reference implementations inspected in Haven:
 
-- [`apps/mobile/src/data/projectname.ts`](https://github.com/redrix-dev/haven/blob/main/apps/mobile/src/data/projectname.ts)—lazy
+- [`apps/mobile/src/data/writ.ts`](https://github.com/redrix-dev/haven/blob/main/apps/mobile/src/data/writ.ts)—lazy
   base store construction and persistence ownership.
-- [`apps/mobile/src/data/channels/Channelprojectname.ts`](https://github.com/redrix-dev/haven/blob/main/apps/mobile/src/data/channels/Channelprojectname.ts)—protected
+- [`apps/mobile/src/data/channels/Channelwrit.ts`](https://github.com/redrix-dev/haven/blob/main/apps/mobile/src/data/channels/Channelwrit.ts)—protected
   vanilla Zustand store and observation-only public handle.
 - [`apps/mobile/src/data/messages/registry.ts`](https://github.com/redrix-dev/haven/blob/main/apps/mobile/src/data/messages/registry.ts)—lazy
   per-community instances and explicit clearing.
-- [`packages/solid-client/src/data/channels/channelSolidprojectname.ts`](https://github.com/redrix-dev/haven/blob/main/packages/solid-client/src/data/channels/channelSolidprojectname.ts)—native
+- [`packages/solid-client/src/data/channels/channelSolidwrit.ts`](https://github.com/redrix-dev/haven/blob/main/packages/solid-client/src/data/channels/channelSolidwrit.ts)—native
   Solid proxy, tracked projections, and private path-based writes.
 - [`packages/solid-client/src/data/messages/registry.ts`](https://github.com/redrix-dev/haven/blob/main/packages/solid-client/src/data/messages/registry.ts)—the
   equivalent lazy Solid scope registry.
@@ -28,11 +28,10 @@ Reference implementations inspected in Haven:
   [`HavenSolidCore`](https://github.com/redrix-dev/haven/blob/main/packages/solid-client/src/core/HavenSolidCore.ts)—session
   ownership, event routing, and deterministic cleanup.
 
-The examples preserve what each ecosystem already does well. projectname-shaped
-means making an additional ownership decision: who retains mutation, who
-observes, which commands cross the boundary, when scoped instances exist, and
-how they are disposed. It does not mean wrapping every library in
-`@redrixx/projectname`.
+The examples preserve what each ecosystem already does well. writ-shaped means
+making an additional ownership decision: who retains mutation, who observes,
+which commands cross the boundary, when scoped instances exist, and how they are
+disposed. It does not mean wrapping every library in `@redrixx/writ`.
 
 ## Built-in cell and entity store
 
@@ -40,7 +39,7 @@ how they are disposed. It does not mean wrapping every library in
 implementation. The channel owner retains `EntityStore`; consumers receive its
 `EntityReader`, and disposal removes the realtime subscription and state.
 
-| Concern                     | Native approach                | projectname-shaped approach                            |
+| Concern                     | Native approach                | writ-shaped approach                                   |
 | --------------------------- | ------------------------------ | ------------------------------------------------------ |
 | Setup ceremony              | Small built-in store           | Owner class plus reader boundary                       |
 | Subscription/reactivity     | `get` + `subscribe`            | Same                                                   |
@@ -58,14 +57,14 @@ implementation. The channel owner retains `EntityStore`; consumers receive its
 `subscribe`, and `set` machinery. It makes clear that the capability split is a
 small object-shape decision, not magic hidden in a framework.
 
-| Concern                     | Native approach                        | projectname-shaped approach                       |
+| Concern                     | Native approach                        | writ-shaped approach                              |
 | --------------------------- | -------------------------------------- | ------------------------------------------------- |
 | Setup ceremony              | Implement listeners and snapshots      | Split writer from exported reader                 |
 | Subscription/reactivity     | Manual listener set                    | Same reader contract                              |
 | Mutation mechanism          | `set`                                  | Owner retains `set`                               |
 | Mutation authority          | Whatever object is exported            | Reader omits `set`                                |
 | Dynamic scoping             | Factory calls                          | Owner/factory per scope                           |
-| Entity lifecycle assertions | None unless implemented                | Add domain methods or projectname entity store    |
+| Entity lifecycle assertions | None unless implemented                | Add domain methods or writ entity store           |
 | Disposal                    | Clear listeners/subscriptions manually | Scope owner coordinates cleanup                   |
 | DevTools/ecosystem support  | None                                   | None added                                        |
 | Best reason to choose it    | Exact minimal behavior                 | Understand the boundary before adding abstraction |
@@ -76,14 +75,14 @@ small object-shape decision, not magic hidden in a framework.
 actions, and a selector in ordinary Zustand style. This is a capable native
 baseline, not a deliberately weak alternative.
 
-| Concern                     | Native approach                         | projectname-shaped approach                            |
+| Concern                     | Native approach                         | writ-shaped approach                                   |
 | --------------------------- | --------------------------------------- | ------------------------------------------------------ |
 | Setup ceremony              | Store factory with colocated actions    | Additional owner/public-surface types                  |
 | Subscription/reactivity     | Zustand selectors and subscriptions     | Keep them unchanged                                    |
 | Mutation mechanism          | Colocated actions / `set`               | Owner decides which actions become commands            |
 | Mutation authority          | Store API and actions reach consumers   | Observation and commands can be separated              |
 | Dynamic scoping             | Call store factory per scope            | Owner registry controls factory and lifetime           |
-| Entity lifecycle assertions | Domain actions implement policy         | projectname strict verbs can be adopted where useful   |
+| Entity lifecycle assertions | Domain actions implement policy         | writ strict verbs can be adopted where useful          |
 | Disposal                    | Application-managed                     | Scoped owner coordinates it                            |
 | DevTools/ecosystem support  | Zustand middleware/ecosystem            | Preserved                                              |
 | Best reason to choose it    | Familiar, flexible Zustand architecture | Add ownership only when contributor boundaries need it |
@@ -95,27 +94,26 @@ solution: the mutable `StoreApi` is private, the class publishes only
 `getState`/`subscribe`, and named methods own writes. This already solves much
 of the authority problem through disciplined module design.
 
-| Concern                     | Native approach                       | projectname-shaped approach                                |
-| --------------------------- | ------------------------------------- | ---------------------------------------------------------- |
-| Setup ceremony              | Class plus private store              | Similar; standardize reader/owner vocabulary               |
-| Subscription/reactivity     | Native Zustand                        | Native Zustand                                             |
-| Mutation mechanism          | Private `setState` in named methods   | Same                                                       |
-| Mutation authority          | Enforced by class/module surface      | Made consistent across domains and substrates              |
-| Dynamic scoping             | Construct class instances             | Registry owns keyed instances                              |
-| Entity lifecycle assertions | Implement explicitly                  | Optional strict projectname operations                     |
-| Disposal                    | Add domain-specific cleanup           | Treat cleanup as owner lifecycle                           |
-| DevTools/ecosystem support  | Preserved                             | Preserved                                                  |
-| Best reason to choose it    | Strong boundary with no extra runtime | projectname may be unnecessary if conventions remain clear |
+| Concern                     | Native approach                       | writ-shaped approach                                |
+| --------------------------- | ------------------------------------- | --------------------------------------------------- |
+| Setup ceremony              | Class plus private store              | Similar; standardize reader/owner vocabulary        |
+| Subscription/reactivity     | Native Zustand                        | Native Zustand                                      |
+| Mutation mechanism          | Private `setState` in named methods   | Same                                                |
+| Mutation authority          | Enforced by class/module surface      | Made consistent across domains and substrates       |
+| Dynamic scoping             | Construct class instances             | Registry owns keyed instances                       |
+| Entity lifecycle assertions | Implement explicitly                  | Optional strict writ operations                     |
+| Disposal                    | Add domain-specific cleanup           | Treat cleanup as owner lifecycle                    |
+| DevTools/ecosystem support  | Preserved                             | Preserved                                           |
+| Best reason to choose it    | Strong boundary with no extra runtime | writ may be unnecessary if conventions remain clear |
 
-## projectname-shaped Zustand with lazy scopes
+## writ-shaped Zustand with lazy scopes
 
-[`zustand-projectname-shaped.ts`](./src/zustand-projectname-shaped.ts) follows
-Haven's mobile shape: a store factory rather than a module singleton, one
-owner/store per channel, lazy creation, writer retained by the owner, reader
-plus narrow command published, realtime routed through the owner, and explicit
-disposal.
+[`zustand-writ-shaped.ts`](./src/zustand-writ-shaped.ts) follows Haven's mobile
+shape: a store factory rather than a module singleton, one owner/store per
+channel, lazy creation, writer retained by the owner, reader plus narrow command
+published, realtime routed through the owner, and explicit disposal.
 
-| Concern                     | Native approach              | projectname-shaped approach                      |
+| Concern                     | Native approach              | writ-shaped approach                             |
 | --------------------------- | ---------------------------- | ------------------------------------------------ |
 | Setup ceremony              | One store factory            | Owner, public surface, and keyed registry        |
 | Subscription/reactivity     | Native Zustand               | Native Zustand                                   |
@@ -134,7 +132,7 @@ reducers, immutable updates, middleware compatibility, and DevTools. The added
 decision is that each channel owner retains `dispatch`, publishes observation,
 routes realtime actions, and owns disposal of its scoped store.
 
-| Concern                     | Native approach                                | projectname-shaped approach                         |
+| Concern                     | Native approach                                | writ-shaped approach                                |
 | --------------------------- | ---------------------------------------------- | --------------------------------------------------- |
 | Setup ceremony              | Slice and configured store                     | Add scoped owner/public reader                      |
 | Subscription/reactivity     | Redux subscriptions/selectors                  | Unchanged                                           |
@@ -153,7 +151,7 @@ the live `createStore` proxy and private path-based setter, exposes tracked
 `createMemo` projections and named commands, and never imitates Zustand with a
 manual adapter. Solid components consume the accessors reactively.
 
-| Concern                     | Native approach                                | projectname-shaped approach                          |
+| Concern                     | Native approach                                | writ-shaped approach                                 |
 | --------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
 | Setup ceremony              | `createStore` plus projections                 | Domain owner and explicit public methods             |
 | Subscription/reactivity     | Fine-grained proxy tracking                    | Preserved directly                                   |
@@ -167,7 +165,7 @@ manual adapter. Solid components consume the accessors reactively.
 
 ## The ceremony and its return
 
-The projectname-shaped variants add owner classes, public-surface types, keyed
+The writ-shaped variants add owner classes, public-surface types, keyed
 registries, and explicit disposal. That ceremony is not free. It earns its place
 when it reduces the mutation surface, makes ownership consistent, asserts
 meaningful lifecycle failures, makes dynamic scoping predictable, simplifies

@@ -1,7 +1,7 @@
 # Package contract
 
-This document states what `@redrixx/projectname` guarantees in v0.1, what it
-reports, and where the boundary ends.
+This document states what `@redrixx/writ` guarantees in v0.1, what it reports,
+and where the boundary ends.
 
 The contract standardizes ownership, reader/writer surfaces, subscriptions, and
 entity lifecycle. A host may use the built-in zero-dependency cell or preserve
@@ -16,8 +16,8 @@ not duplicate the substrate's responsibilities.
   `EntityReader`.
 - Readers expose observation only. They do not contain `set`, `setState`, raw
   store mutation, entity lifecycle, persistence, or reset methods.
-- Sharing a writer shares authority. projectname does not identify one human or
-  module owner at runtime.
+- Sharing a writer shares authority. writ does not identify one human or module
+  owner at runtime.
 - Values returned by readers are not deep-frozen. Use readonly public types and
   immutable updates when mutable references would weaken the boundary.
 
@@ -48,8 +48,8 @@ when individual domain deaths matter.
 
 - Supplying persistence without a key throws during construction.
 - Serialization or persistence write failures are warned and swallowed after the
-  in-memory commit. projectname does not roll memory back when durable storage
-  is unavailable.
+  in-memory commit. writ does not roll memory back when durable storage is
+  unavailable.
 - Missing persisted data is a no-op.
 - Invalid persisted data is warned, removed from persistence, and does not
   replace current memory state.
@@ -69,15 +69,14 @@ compatibility guarantees for those libraries.
 
 ## Scoped owners and disposal
 
-projectname does not currently ship a generic keyed-owner registry. The
-typechecked recipes demonstrate and test the intended composition pattern:
-lazily construct one owner per key, return the same instance while active,
-unsubscribe and clear on close, delete the instance, and create a fresh owner if
-the key returns.
+writ does not currently ship a generic keyed-owner registry. The typechecked
+recipes demonstrate and test the intended composition pattern: lazily construct
+one owner per key, return the same instance while active, unsubscribe and clear
+on close, delete the instance, and create a fresh owner if the key returns.
 
-Tests cover this lifecycle for the built-in store and the projectname-shaped
-Zustand recipe, including 500 repeated scope creation/destruction cycles with no
-live realtime subscriptions left behind.
+Tests cover this lifecycle for the built-in store and the writ-shaped Zustand
+recipe, including 500 repeated scope creation/destruction cycles with no live
+realtime subscriptions left behind.
 
 ## Expected operating range
 
@@ -89,7 +88,7 @@ built-in workload is scoped owner collections in the hundreds to low thousands,
 where writes are meaningful domain events rather than a per-frame stream.
 Collections around 10,000 entities or sustained high-frequency writes should be
 measured in the target runtime; another substrate may be more appropriate while
-retaining the same projectname ownership shape.
+retaining the same writ ownership shape.
 
 Run the local measurement with:
 

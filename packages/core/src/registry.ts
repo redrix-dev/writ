@@ -9,7 +9,7 @@
  * Registration is **strict by default**, for the same reason the entity
  * lifecycle is: a *second* `register` almost always means a bug — a stray second
  * composition root silently hijacking every `require()`, which is exactly the
- * ambient-authority problem projectname exists to prevent. So a double `register`
+ * ambient-authority problem writ exists to prevent. So a double `register`
  * throws; the explicit way to swap instances (tests, HMR) is `reset()` first —
  * and the error says so.
  *

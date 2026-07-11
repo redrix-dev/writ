@@ -19,8 +19,8 @@ const modes: readonly { id: Mode; label: string; note: string }[] = [
     note: "A fair alternative with private mutation and named actions.",
   },
   {
-    id: "projectname",
-    label: "projectname-shaped",
+    id: "writ",
+    label: "writ-shaped",
     note: "Most consumers receive observation plus narrow commands, not raw writers.",
   },
 ];
@@ -88,11 +88,8 @@ function Topology({ mode }: { mode: Mode }) {
 
 export function App() {
   const mode =
-    (new URLSearchParams(location.search).get("mode") as Mode | null) ??
-    "projectname";
-  const selectedMode = modes.some((item) => item.id === mode)
-    ? mode
-    : "projectname";
+    (new URLSearchParams(location.search).get("mode") as Mode | null) ?? "writ";
+  const selectedMode = modes.some((item) => item.id === mode) ? mode : "writ";
   const runtime = useMemo(
     () => new EvidenceRuntime(selectedMode),
     [selectedMode],
@@ -111,7 +108,7 @@ export function App() {
     <div className="app-shell">
       <header className="hero">
         <div>
-          <span className="kicker">projectname evidence lab</span>
+          <span className="kicker">writ evidence lab</span>
           <h1>Make ownership and invalid transitions visible.</h1>
           <p>
             One domain scenario, one scripted event stream, and one rendered
@@ -156,7 +153,7 @@ export function App() {
             </small>
           </article>
           <article>
-            <span>projectname-shaped</span>
+            <span>writ-shaped</span>
             <strong>Writer retained; readers and commands published</strong>
             <small>
               Strict existence transitions and scoped disposal are explicit.
@@ -376,7 +373,7 @@ export function App() {
 
         <section className="panel limits-panel">
           <div>
-            <span className="eyebrow">What projectname did not solve</span>
+            <span className="eyebrow">What writ did not solve</span>
             <h2>The boundary is evidence, not magic.</h2>
           </div>
           <ul>
@@ -388,7 +385,7 @@ export function App() {
           </ul>
           <p className="decisive">
             In a disciplined native implementation, correctness depends on
-            contributors preserving the convention. In the projectname-shaped
+            contributors preserving the convention. In the writ-shaped
             implementation, most contributors never receive the mutation
             capability.
           </p>

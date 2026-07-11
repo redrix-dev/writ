@@ -1,4 +1,4 @@
-import { createCell, createEntityStore } from "@redrixx/projectname";
+import { createCell, createEntityStore } from "@redrixx/writ";
 import type { Message, User } from "../types.js";
 import type { Server } from "../simulator.js";
 

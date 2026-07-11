@@ -1,4 +1,4 @@
-# projectname terminology
+# writ terminology
 
 ## Owner
 
@@ -7,14 +7,14 @@ normally retains the writer and disposes external work.
 
 ## Writer
 
-A capability containing projectname mutation methods such as `set`, `spawn`,
-`update`, and `destroy`. Sharing it shares authority.
+A capability containing writ mutation methods such as `set`, `spawn`, `update`,
+and `destroy`. Sharing it shares authority.
 
 ## Reader
 
 A separate observation capability with `get` and `subscribe`, plus domain read
-helpers such as `getEntity`. It exposes no projectname mutation method. Returned
-values are not deep-frozen.
+helpers such as `getEntity`. It exposes no writ mutation method. Returned values
+are not deep-frozen.
 
 ## Command
 
@@ -40,9 +40,9 @@ community, channel, document, session, or device.
 
 ## Substrate
 
-The reactive storage mechanism: projectname’s built-in cell, Zustand, Redux,
-Solid, or another store. It provides storage and update propagation; ownership
-is a separate architectural choice.
+The reactive storage mechanism: writ’s built-in cell, Zustand, Redux, Solid, or
+another store. It provides storage and update propagation; ownership is a
+separate architectural choice.
 
 ## Composition root
 

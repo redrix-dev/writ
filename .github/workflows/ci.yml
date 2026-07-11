@@ -28,7 +28,7 @@ jobs:
       - run: npm ci
       - name: Install minimum supported React
         run: |
-          npm pkg set "devDependencies.react=18.3.1" "devDependencies.react-dom=18.3.1" "devDependencies.react-test-renderer=18.3.1" "devDependencies.@types/react=18.3.28" "devDependencies.@types/react-test-renderer=18.3.1" --workspace @redrixx/projectname-react
+          npm pkg set "devDependencies.react=18.3.1" "devDependencies.react-dom=18.3.1" "devDependencies.react-test-renderer=18.3.1" "devDependencies.@types/react=18.3.28" "devDependencies.@types/react-test-renderer=18.3.1" --workspace @redrixx/writ-react
           npm install
       - run: npm run build
-      - run: npm run test:compat --workspace @redrixx/projectname-react
+      - run: npm run test:compat --workspace @redrixx/writ-react

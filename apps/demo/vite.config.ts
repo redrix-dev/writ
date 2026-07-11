@@ -11,10 +11,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@redrixx/projectname-react": fromRoot(
-        "../../packages/react/src/index.ts",
-      ),
-      "@redrixx/projectname": fromRoot("../../packages/core/src/index.ts"),
+      "@redrixx/writ-react": fromRoot("../../packages/react/src/index.ts"),
+      "@redrixx/writ": fromRoot("../../packages/core/src/index.ts"),
     },
   },
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BuiltInCommunityOwner } from "./builtin.js";
 import type { MessageEvent, RealtimeSource } from "./shared.js";
-import { ZustandCommunityOwner } from "./zustand-projectname-shaped.js";
+import { ZustandCommunityOwner } from "./zustand-writ-shaped.js";
 
 function createRealtimeHarness() {
   const listeners = new Map<string, Set<(event: MessageEvent) => void>>();
@@ -32,7 +32,7 @@ describe("lazy scoped owner registries", () => {
     expect(community.channel("general")).not.toBe(first);
   });
 
-  it("applies the same lifecycle to the projectname-shaped Zustand owner", () => {
+  it("applies the same lifecycle to the writ-shaped Zustand owner", () => {
     const realtime = createRealtimeHarness();
     const community = new ZustandCommunityOwner(realtime.source);
     const first = community.channel("general");

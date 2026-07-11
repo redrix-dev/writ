@@ -1,7 +1,7 @@
 {
-  "name": "@redrixx/projectname-react",
+  "name": "@redrixx/writ-react",
   "version": "0.1.0",
-  "description": "React bindings for @redrixx/projectname — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
+  "description": "React bindings for @redrixx/writ — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
   "type": "module",
   "exports": {
     ".": {
@@ -26,26 +26,26 @@
     "react",
     "hooks",
     "state-management",
-    "projectname",
+    "writ",
     "useSyncExternalStore"
   ],
   "author": "Cody Magnuson (redrixx)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/redrix-dev/projectname.git",
+    "url": "git+https://github.com/redrix-dev/writ.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/redrix-dev/projectname#readme",
+  "homepage": "https://github.com/redrix-dev/writ#readme",
   "bugs": {
-    "url": "https://github.com/redrix-dev/projectname/issues"
+    "url": "https://github.com/redrix-dev/writ/issues"
   },
   "peerDependencies": {
-    "@redrixx/projectname": "^0.1.0",
+    "@redrixx/writ": "^0.1.0",
     "react": ">=18"
   },
   "devDependencies": {
-    "@redrixx/projectname": "*",
+    "@redrixx/writ": "*",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",
