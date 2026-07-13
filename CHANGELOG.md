@@ -8,8 +8,11 @@ All notable changes to this project will be documented here. The format follows
 
 ### Changed
 
-- CI hardened: explicit least-privlege `permissions`, `concurrency` to cancel superseded runs, and a Node `20/22/24` matrix on the main job.
-- Automated npm publishing moved to trusted publishing (OIDC) via a new `Release` workflow - no stored token, with provenance attestations attached automatically.
+- CI hardened: explicit least-privlege `permissions`, `concurrency` to cancel
+  superseded runs, and a Node `20/22/24` matrix on the main job.
+- Automated npm publishing moved to trusted publishing (OIDC) via a new
+  `Release` workflow - no stored token, with provenance attestations attached
+  automatically.
 
 ## [0.1.0] - 2026-07-10
 
