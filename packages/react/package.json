@@ -1,6 +1,6 @@
 {
   "name": "@redrixx/writ-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React bindings for @redrixx/writ — subscribe components as readers. Deliberately thin; the core is fully usable without it.",
   "type": "module",
   "exports": {

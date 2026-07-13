@@ -1,6 +1,6 @@
 {
   "name": "@redrixx/writ",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A substrate-agnostic ownership and lifecycle contract for hot shared state, with separate writer and reader capabilities.",
   "type": "module",
   "exports": {
