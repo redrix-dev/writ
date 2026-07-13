@@ -5,14 +5,27 @@ on:
     branches: [main]
   pull_request:
 
+# Least-privilege by default: CI only needs to read the repo.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same branch/PR to save runner minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
       - run: npm run ci
@@ -27,6 +40,10 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Install minimum supported React
+        # This job deliberately diverges from the lockfile to prove writ-react
+        # works against its minimum supported React (18.3.1). `npm install`
+        # (not `npm ci`) is required here so the pinned versions above take
+        # effect — do not "fix" this back to `npm ci`.
         run: |
           npm pkg set "devDependencies.react=18.3.1" "devDependencies.react-dom=18.3.1" "devDependencies.react-test-renderer=18.3.1" "devDependencies.@types/react=18.3.28" "devDependencies.@types/react-test-renderer=18.3.1" --workspace @redrixx/writ-react
           npm install

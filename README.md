@@ -151,6 +151,9 @@ Both packages are **ESM-only**. CommonJS consumers must use dynamic `import()`.
 The browser-compatible core has no Node-specific runtime requirement and no
 runtime dependencies.
 
+With zero dependancies and no install-time lifecycle scripts, both packages install completely clean under
+npm 12's [install-time security defaults](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/), where dependancy scripts and implicit native builds no longer run unless explicitly allowed - there is nothing here to allow.
+
 ## The 60-second tour
 
 ### A writer-and-reader cell

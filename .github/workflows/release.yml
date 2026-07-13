@@ -1,0 +1,33 @@
+name: Release
+
+# Publish on a GitHub Release so the publish is human-gated: cut a release
+# (e.g. tag v0.1.1) and this workflow pushes both packages to npm.
+on:
+  release:
+    types: [published]
+
+# Least-privilege: read the repo, and request an OIDC token so npm can verify
+# this workflow as a trusted publisher. No npm token is stored anywhere.
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing (and automatic provenance attestations) needs a
+      # recent npm; the npm bundled with Node may lag behind.
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - run: npm run build
+      # Publish core before its React adapter. With trusted publishing enabled
+      # on each package's npm settings, no NODE_AUTH_TOKEN is needed and
+      # provenance is attached automatically.
+      - run: npm publish --workspace @redrixx/writ
+      - run: npm publish --workspace @redrixx/writ-react
